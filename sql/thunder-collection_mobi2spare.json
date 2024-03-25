@@ -1,0 +1,412 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "mobi2spare",
+    "dateExported": "2024-03-25T16:56:39.184Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "64304008-d67c-4343-8f99-a78c9cfab3ce",
+            "name": "users",
+            "containerId": "",
+            "created": "2024-03-23T12:10:48.347Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "18c063c9-8909-41d7-a8f5-8876efdb7f8f",
+            "name": "authentication",
+            "containerId": "",
+            "created": "2024-03-23T12:13:32.537Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "4e72dbf7-a918-463a-8159-811606c8d359",
+            "name": "category",
+            "containerId": "",
+            "created": "2024-03-24T01:56:31.330Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "7d2f17f7-cfd7-4ed5-9477-5d2a0ac311db",
+            "name": "brands",
+            "containerId": "",
+            "created": "2024-03-24T06:26:53.578Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "70c2b655-aab3-4c9b-85a1-a02aecce8c8b",
+            "name": "products",
+            "containerId": "",
+            "created": "2024-03-24T06:26:59.573Z",
+            "sortNum": 50000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "389b59a3-ca9c-488b-8fb7-d5ebafcc21d4",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "18c063c9-8909-41d7-a8f5-8876efdb7f8f",
+            "name": "signup",
+            "url": "http://localhost:8800/api/signup",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-03-23T12:10:58.213Z",
+            "modified": "2024-03-25T16:43:48.409Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\" : \"bismeet8\",\n  \"phone\":\"9892308349\",\n  \"password\":\"bismeet\",\n  \"organization\":\"test\",\n  \"address\":\"Abc street\",\n  \"role\":\"GeneralUser\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "13613e36-5f83-45d9-aadb-2aa56575476e",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "18c063c9-8909-41d7-a8f5-8876efdb7f8f",
+            "name": "signin",
+            "url": "http://localhost:8800/api/signin",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-03-23T13:05:14.744Z",
+            "modified": "2024-03-25T16:44:26.140Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"phone\" : \"9892308349\",\n  \"password\":\"bismeet\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "1e45f668-dfb8-4c9b-9d5c-095af6e65955",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "4e72dbf7-a918-463a-8159-811606c8d359",
+            "name": "create_category",
+            "url": "http://localhost:8800/api/category",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-03-24T01:56:44.281Z",
+            "modified": "2024-03-24T09:52:10.670Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \n  \"name\":\"12t1\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "8d047d3b-2dc9-4f70-974e-1f02dba6090e",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "4e72dbf7-a918-463a-8159-811606c8d359",
+            "name": "get_categories",
+            "url": "http://localhost:8800/api/category",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2024-03-24T03:13:04.260Z",
+            "modified": "2024-03-24T09:55:46.009Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3Mzk0MiwiZXhwIjoxNzExMzYwMzQyfQ.4fJCLYkuovir8JWZa3JI5xr3EEbDXa3O54v0dsvCxbc"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "dfdc22be-3657-410f-aeaf-506e98578c14",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "64304008-d67c-4343-8f99-a78c9cfab3ce",
+            "name": "get_users",
+            "url": "http://localhost:8800/api/users",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2024-03-24T09:33:55.313Z",
+            "modified": "2024-03-24T09:51:37.640Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "537270ba-9056-4478-bf74-6b507f094ac6",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "7d2f17f7-cfd7-4ed5-9477-5d2a0ac311db",
+            "name": "create_brand",
+            "url": "http://localhost:8800/api/brand",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2024-03-24T10:03:25.568Z",
+            "modified": "2024-03-25T06:03:03.278Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \n  \"name\":\"brand1\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b23b82b3-7f4e-40df-b3ac-dae5efef8ed3",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "7d2f17f7-cfd7-4ed5-9477-5d2a0ac311db",
+            "name": "get_brands",
+            "url": "http://localhost:8800/api/brand",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2024-03-24T10:03:33.875Z",
+            "modified": "2024-03-24T10:19:59.953Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "1c5804a9-74fb-4566-8031-8be580c7d6c0",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "70c2b655-aab3-4c9b-85a1-a02aecce8c8b",
+            "name": "create_product",
+            "url": "http://localhost:8800/api/products/",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2024-03-24T10:12:48.024Z",
+            "modified": "2024-03-25T11:31:58.032Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTM2NTgzNywiZXhwIjoxNzExNDUyMjM3fQ.Kt7ecOLxgOuBDm6Su-WSPmY9lIIwvka0IFIEEsiyxuA"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \n  \"brand_id\":1,\n  \"category_id\":1,\n  \"quantity\":120,\n  \"description\":\"A beautiful motherboard\",\n  \"price\":12300,\n  \"seller_id\":1\n\n  \n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "6b15fbb8-2e87-4d5b-8573-fd2dac6a770f",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "4e72dbf7-a918-463a-8159-811606c8d359",
+            "name": "update_category",
+            "url": "http://localhost:8800/api/category/1",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2024-03-24T10:26:44.356Z",
+            "modified": "2024-03-25T04:15:57.584Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \n  \"name\":\"new-cat11\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b651ba77-e774-4d8c-a32b-96f2560175e7",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "7d2f17f7-cfd7-4ed5-9477-5d2a0ac311db",
+            "name": "update_brand",
+            "url": "http://localhost:8800/api/brand/1",
+            "method": "PUT",
+            "sortNum": 110000,
+            "created": "2024-03-24T10:26:52.438Z",
+            "modified": "2024-03-25T04:16:33.221Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \n  \"name\":\"newbrand1\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "dbed8ca2-081d-4a9a-94a1-c87189590c70",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "70c2b655-aab3-4c9b-85a1-a02aecce8c8b",
+            "name": "update_product",
+            "url": "http://localhost:8800/api/products/4",
+            "method": "PUT",
+            "sortNum": 120000,
+            "created": "2024-03-24T16:56:06.126Z",
+            "modified": "2024-03-25T11:24:07.792Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTM2NTgzNywiZXhwIjoxNzExNDUyMjM3fQ.Kt7ecOLxgOuBDm6Su-WSPmY9lIIwvka0IFIEEsiyxuA"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \n  \"brand_id\":1,\n  \"category_id\":1,\n  \"quantity\":120,\n  \"description\":\"A beautiful motherboar1\",\n  \"price\":1230,\n  \"seller_id\":1\n\n  \n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "87e0d7a3-5d38-4eab-bcc2-bf59337bdc02",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "4e72dbf7-a918-463a-8159-811606c8d359",
+            "name": "delete_category",
+            "url": "http://localhost:8800/api/category/2",
+            "method": "DELETE",
+            "sortNum": 130000,
+            "created": "2024-03-24T16:56:20.691Z",
+            "modified": "2024-03-25T04:31:13.222Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "8bbe2c88-b314-4f23-89cc-dfcc7de5c369",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "7d2f17f7-cfd7-4ed5-9477-5d2a0ac311db",
+            "name": "delete_brand",
+            "url": "http://localhost:8800/api/brand/1",
+            "method": "DELETE",
+            "sortNum": 140000,
+            "created": "2024-03-24T16:56:27.034Z",
+            "modified": "2024-03-25T04:25:49.121Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "d01e8d0c-51ef-44ec-af6d-d7d1c9f1a9b3",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "70c2b655-aab3-4c9b-85a1-a02aecce8c8b",
+            "name": "get_all_products",
+            "url": "http://localhost:8800/api/products?limit=10&page=2",
+            "method": "GET",
+            "sortNum": 150000,
+            "created": "2024-03-25T06:10:50.804Z",
+            "modified": "2024-03-25T14:05:01.229Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTM2NTgzNywiZXhwIjoxNzExNDUyMjM3fQ.Kt7ecOLxgOuBDm6Su-WSPmY9lIIwvka0IFIEEsiyxuA"
+                }
+            ],
+            "params": [
+                {
+                    "name": "limit",
+                    "value": "10",
+                    "isPath": false
+                },
+                {
+                    "name": "page",
+                    "value": "2",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "025bdb89-e9e0-45fe-a9c6-773bcc9b8891",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "70c2b655-aab3-4c9b-85a1-a02aecce8c8b",
+            "name": "delete_products",
+            "url": "http://localhost:8800/api/products/5",
+            "method": "DELETE",
+            "sortNum": 160000,
+            "created": "2024-03-25T06:11:00.044Z",
+            "modified": "2024-03-25T06:21:16.781Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTI3MzkyMSwiZXhwIjoxNzExMzYwMzIxfQ.NDj6aCOysld3Wl-WES2MgsPxivVQWWouKf0Fr4PUmag"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "90d4971f-dbf2-47e5-ad47-7b46ce1cd490",
+            "colId": "e568601c-9dbe-4879-ad21-eaef2c836f83",
+            "containerId": "70c2b655-aab3-4c9b-85a1-a02aecce8c8b",
+            "name": "upload_product_image",
+            "url": "http://localhost:8800/api/products/upload/2/2",
+            "method": "POST",
+            "sortNum": 170000,
+            "created": "2024-03-25T13:02:43.924Z",
+            "modified": "2024-03-25T16:53:15.650Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "multipart/form-data",
+                    "isDisabled": true
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "file",
+                        "value": "",
+                        "isDisabled": true
+                    }
+                ],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "d:\\paruin\\photu1.jpg"
+                    }
+                ]
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcxMTM2NTgzNywiZXhwIjoxNzExNDUyMjM3fQ.Kt7ecOLxgOuBDm6Su-WSPmY9lIIwvka0IFIEEsiyxuA"
+            },
+            "tests": [],
+            "preReq": {
+                "options": {
+                    "clearCookies": true
+                }
+            }
+        }
+    ]
+}
