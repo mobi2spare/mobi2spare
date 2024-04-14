@@ -18,17 +18,17 @@ export function verifyAndGetUserRoles(req, res, next) {
         if (decoded.role == undefined) {
             return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid User Access' });
         }
-        req.userRoles = decoded.roles; // Store roles in request object
+        req.userRoles = decoded.role; // Store roles in request object
         next();
     } catch (err) {
         return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });
     }
 }
 
-export function validateErrors (req){
+export function validateErrors (req, res){
     const errors = validationResult(req);
-
+    console.log(errors);
   if (!errors.isEmpty()) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Failed to register user' });
   }
 }

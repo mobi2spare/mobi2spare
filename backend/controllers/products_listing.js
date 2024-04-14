@@ -1,23 +1,24 @@
 import { StatusCodes } from "http-status-codes";
 import { validateErrors } from "../validators/common_validation.js";
-import { upload } from "../constants/constants.js";
+import { withTransaction } from "./transactions.js";
+import { uploadImage } from "../utils/utils.js";
 
 export const addProductForSeller = async (req, res) => {
 
-    if (validateErrors(req) == undefined) {
+    if (validateErrors(req, res) == undefined) {
 
-        const { brand_id, category_id, quantity, description, price, product_condition, seller_id } = req.body;
+        const { name, brand_id, category_id, quantity, description, price, product_condition, seller_id, attribute_value_id } = req.body;
 
 
         try {
 
-            const result = await req.pool.query('INSERT INTO products (brand_id, category_id, quantity, description, seller_id,price, product_condition) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *', [brand_id, category_id, quantity, description, seller_id, price, product_condition]);
-
+            const result = await req.pool.query('INSERT INTO products (name, brand_id, category_id, quantity, description, seller_id,price, product_condition) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id', [name, brand_id, category_id, quantity, description, seller_id, price, product_condition]);
+            await req.pool.query('INSERT INTO product_attributes (product_id, attribute_value_id) VALUES ($1,$2)', [result.rows[0].id, attribute_value_id]);
             res.status(StatusCodes.CREATED).json({
                 success: true,
                 message: 'Listing created successfully!',
-                data: result.rows,
-              });
+                data: result.rows[0].id,
+            });
 
         } catch (error) {
             console.error('Error adding Item:', error);
@@ -31,12 +32,77 @@ export const addProductForSeller = async (req, res) => {
 
 };
 
+export const updateProductWithImage = async (req, res) => {
+
+    const productId = req.params['id'];
+
+    if (productId != undefined) {
+
+        try {
+
+            const { imagePath } = req.body;
+
+            if (imagePath) {
+
+
+                await req.pool.query('BEGIN')
+
+                const result = await req.pool.query('INSERT INTO images (image_path) VALUES ($1) RETURNING ID', [imagePath]);
+
+                if (result.rows.length >= 1) {
+                    const imageId = result.rows[0].id;
+
+                    await req.pool.query('INSERT INTO product_image_mapping (product_id, image_id) VALUES ($1,$2)', [productId, imageId]);
+
+                    await req.pool.query('COMMIT')
+
+                    res.status(StatusCodes.OK).json({ message: 'Listing updated successfully!' });
+
+                }
+
+                else {
+
+                    await req.pool.query('ROLLBACK')
+
+                    res.status(StatusCodes.OK).json({ message: 'Failed to update product!' });
+                }
+
+
+            }
+
+            else {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+
+            }
+
+        } catch (error) {
+            console.error('Error adding Item:', error);
+            await req.pool.query('ROLLBACK')
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+
+        }
+
+        finally {
+            await req.pool.release();
+        }
+
+
+
+
+    }
+
+    else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+    }
+
+
+}
 
 export const updateProductForSeller = async (req, res) => {
 
-    if (validateErrors(req) == undefined) {
+    const productId = req.params['id'];
 
-        const productId = req.params['id'];
+    if (validateErrors(req, res) == undefined && productId != undefined) {
 
         try {
 
@@ -92,6 +158,25 @@ export const deleteProductForSeller = async (req, res) => {
 
 };
 
+export const getInfoForProduct = async (req, res) => {
+
+    const productId = req.params['pid'];
+    try {
+        const query = 'SELECT products.*, json_agg(images.image_path) AS image_path FROM products LEFT JOIN product_image_mapping pim ON products.id = pim.product_id \
+        LEFT JOIN images ON images.id = pim.image_id  WHERE products.id = $1 GROUP BY products.id';
+        const result = await req.pool.query(query, [productId]);
+        console.log(result.rows[0]);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error getting products:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+    }
+}
+
 
 export const getAllProducts = async (req, res) => {
 
@@ -107,29 +192,40 @@ export const getAllProducts = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const query = `
-            SELECT *
-            FROM products
-            ORDER BY id ASC
-            LIMIT $1
-            OFFSET $2
-        `;
+                SELECT products.price,products.id as pid, products.name, products.description,products.brand_id, products.category_id, categories.name as cname, brands.name as bname, COALESCE(
+                    json_agg(json_build_object(attributes.attribute_name, attribute_value.value)),
+                    '[]' 
+                  ) AS attribute_info,
+                  COALESCE(json_agg(images.image_path)FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path 
+                FROM products
+                LEFT JOIN product_image_mapping pim ON products.id = pim.product_id
+                LEFT JOIN images ON images.id = pim.image_id 
+                INNER JOIN categories ON products.category_id = categories.id
+                INNER JOIN brands ON products.brand_id = brands.id 
+                LEFT JOIN product_attributes ON products.id = product_attributes.product_id
+                INNER JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
+                INNER JOIN attributes ON attribute_value.id = attributes.id
+                GROUP BY products.id,categories.name,brands.name
+                ORDER BY products.id ASC
+                LIMIT $1
+                OFFSET $2`;
 
         const values = [limit, offset]; // Parameters for prepared statement
 
         const result = await req.pool.query(query, values);
-        
+
         res.status(StatusCodes.OK).json({
             success: true,
             data: result.rows,
             pagination: {
-              total,  // Total number of products (optional if not included in totalProductsQuery)
-              limit,
-              page,
-              offset,
-              totalPages: Math.ceil(total / limit), // Calculate total pages based on total and limit
+                total,  // Total number of products (optional if not included in totalProductsQuery)
+                limit,
+                page,
+                offset,
+                totalPages: Math.ceil(total / limit), // Calculate total pages based on total and limit
             },
-          });
-      
+        });
+
     }
 
     catch (error) {
@@ -145,17 +241,6 @@ export const getAllProducts = async (req, res) => {
 
 export const uploadProductImage = async (req, res) => {
 
-    if (req.file) {
-        // const filename = req.file.filename;
-        // const path = req.file.path;
-        // const mimetype = req.file.mimetype;
-        return res.status(StatusCodes.OK).json({
-            success: true,
-            path : {'key' : `${process.env.FILE_UPLOAD_PATH}\`${req.params['uid']}`},
-            message: "Success, Image uploaded!",
-          });
-      } else {
-        res.status(400).json({ message: 'No file uploaded' });
-      }
+    return await uploadImage(req, res);
 
 }

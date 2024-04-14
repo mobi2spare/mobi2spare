@@ -16,13 +16,33 @@ export const validationMessages = {
     USERNAME_REQUIRED_MESSAGE: 'A Valid Name is required'
 }
 
+
+
+
 export const upload = multer({
     limits: { fileSize: 1200000 },
 
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            const userId = req.params['uid'];
-            const uploadPath = path.join(process.env.FILE_UPLOAD_PATH, userId);
+            let userId;
+            let uploadPath;
+            let subFolder;
+            if (req.params['pid']){
+                subFolder = 'product';
+                userId = req.params['uid'];
+            }
+            else if (req.params['categoryId'])
+            {
+                subFolder = 'category';
+            }
+            let subFolderId = req.params['pid'] || req.params['categoryId'];
+            if (userId != undefined){
+                uploadPath = path.join(process.env.FILE_UPLOAD_PATH, userId,subFolder,subFolderId);
+            }
+            else{
+                uploadPath = path.join(process.env.FILE_UPLOAD_PATH,subFolder,subFolderId);
+            }
+            
             fs.mkdirSync(uploadPath, { recursive: true }); // Create directory if it doesn't exist
             cb(null, uploadPath);
         },

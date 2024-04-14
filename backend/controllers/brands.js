@@ -4,7 +4,7 @@ import { validateErrors } from "../validators/common_validation.js";
 
 export const addBrand = async (req, res) => {
 
-    if (validateErrors(req) == undefined) {
+    if (validateErrors(req, res) == undefined) {
         const { name } = req.body;
 
         if (!name) {
@@ -62,7 +62,7 @@ export const getAllBrands = async (req, res) => {
 export const updateBrand = async (req, res) => {
 
     const id = req.params['id'];
-    if (validateErrors(req) == undefined) {
+    if (validateErrors(req, res) == undefined) {
         const { name } = req.body;
 
         try {

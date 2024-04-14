@@ -1,11 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import { validationResult } from "express-validator";
 import { validateErrors } from "../validators/common_validation.js";
+import { uploadImage } from "../utils/utils.js";
 
 
 export const addCategory = async (req, res) => {
 
-    if (validateErrors(req) == undefined) {
+    if (validateErrors(req, res) == undefined) {
         const { name } = req.body;
 
         if (!name) {
@@ -38,15 +39,114 @@ export const addCategory = async (req, res) => {
 
 };
 
+export const getInfoForCategory = async (req, res) =>{
+
+    const categoryId = req.params['id'];
+    console.log(categoryId);
+    try {
+        const query = 'SELECT categories.*, json_agg(images.image_path) AS image_path FROM categories LEFT JOIN category_image_mapping cim ON categories.id = cim.category_id \
+        LEFT JOIN images ON images.id = cim.image_id  WHERE categories.id = $1 GROUP BY categories.id';
+        const result = await req.pool.query(query, [categoryId]);
+        console.log(result.rows[0]);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            data: result.rows[0]
+        });
+        
+    } catch (error) {
+        console.error('Error getting categories:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+    }
+
+}
+
+export const updateCategoryWithImage = async (req, res) => {
+
+    const categoryId = req.params['id'];
+
+    if (categoryId != undefined) {
+
+        try {
+
+            const { imagePath } = req.body;
+
+            if (imagePath) {
+
+
+                await req.pool.query('BEGIN')
+
+                const result = await req.pool.query('INSERT INTO images (image_path) VALUES ($1) RETURNING ID', [imagePath]);
+
+                if (result.rows.length >= 1) {
+                    const imageId = result.rows[0].id;
+
+                    await req.pool.query('INSERT INTO category_image_mapping (category_id, image_id) VALUES ($1,$2)', [categoryId, imageId]);
+
+                    await req.pool.query('COMMIT')
+
+                    res.status(StatusCodes.OK).json({ message: 'Listing updated successfully!' });
+
+                }
+
+                else {
+
+                    await req.pool.query('ROLLBACK')
+
+                    res.status(StatusCodes.OK).json({ message: 'Failed to update category!' });
+                }
+
+
+            }
+
+            else {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+
+            }
+
+        } catch (error) {
+            console.error('Error adding Item:', error);
+            await req.pool.query('ROLLBACK')
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+
+        }
+
+        finally {
+            await req.pool.release();
+        }
+
+
+
+
+    }
+
+    else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+    }
+
+
+}
+
 export const getAllCategories = async (req, res) => {
 
     try {
-        const result = await req.pool.query('SELECT * FROM categories');
-        // TODO PAGINATION?
+
+        const query = `
+            SELECT categories.*,  json_agg(images.image_path) AS image_path
+            FROM categories
+            LEFT JOIN category_image_mapping cim ON categories.id = cim.category_id
+            LEFT JOIN images ON images.id = cim.image_id  
+            GROUP BY categories.id
+            ORDER BY id ASC
+
+        `;
+
+        const result = await req.pool.query(query);
+
         res.status(StatusCodes.OK).json({
             success: true,
             data: result.rows,
         });
+
     }
 
     catch (error) {
@@ -112,3 +212,9 @@ export const deleteCategory = async (req, res) => {
 
 
 };
+
+export const uploadCategoryImage = async (req, res) => {
+
+    return await uploadImage(req, res);
+
+}
