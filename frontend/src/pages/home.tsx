@@ -4,9 +4,9 @@ import { SIGN_IN, REGISTER, USERHOME } from '../router/router-path';
 import { Box, Typography } from '@mui/material';
 import { SignUpButton } from '../components/auth/sign-up-button';
 import { LoginButton } from '../components/auth/login-button';
-import ImageContainer from '../components/images/image-container';
+import ImageContainer from '../components/images/image_container';
 import { useContext } from 'react';
-import { AuthContext } from '../contexts/auth.context';
+import { AuthContext } from '../contexts/auth/auth.context';
 
 export default function Home() {
     const { authenticated } = useContext(AuthContext);

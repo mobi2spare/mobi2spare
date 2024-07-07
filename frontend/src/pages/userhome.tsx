@@ -1,123 +1,95 @@
 
 import { useEffect, useState } from 'react';
 import Layout from "../components/layout/layout";
-import { Box, Card, CardContent, Grid, IconButton, ImageList, ImageListItem, ImageListItemBar, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Card, CardContent, ImageList, ImageListItem, Typography } from '@mui/material';
 import SearchBar from '../components/common/search_bar';
-import { Category, Product } from '../constants/models';
+import { Category } from '../constants/models';
 import { BASE_URL, GET_CATEGORIES, GET_PRODUCTS } from '../utils/api';
 import { TOKEN } from '../constants/constants';
-import AddCircle from '@mui/icons-material/AddCircle';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import { red } from '@mui/material/colors';
-import ProductCard from '../components/common/product_card';
-
+import PaginatedGrid from '../components/layout/grid_pagination';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
+import api from '../utils/network_requests';
+import { useQuery } from 'react-query';
+import { setTitle } from '../store/actions';
+import { useDispatch } from 'react-redux';
 
 export default function UserHome() {
 
-  const [categoryImages, setCategoryImages] = useState<Category[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [bestSellingProducts, setBestSellingProducts] = useState<Product[]>([]);
-  const [isLoadingProduct, setIsLoadingProduct] = useState(false);
-  const [isLoadingCategory, setisLoadingCategory] = useState(false);
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    const fetchCategories = async () => {
-      // setLoading(true); // Set loading state to indicate data fetching
-      try {
-        const token = localStorage.getItem(TOKEN);
-        if (token !== undefined && token !== null) {
-          const headers = new Headers();
-          headers.append('Authorization', `Bearer ${token}`);
-          setisLoadingCategory(true);
-          const response = await fetch(BASE_URL + GET_CATEGORIES, {
-            method: 'GET',
-            headers,
-          });
-          const data = await response.json();
-          setCategoryImages(data.data);
+    dispatch(setTitle(""))
+  
+  }, [])
+  
+  
+  const fetchCategories = async () => {
+        const response = await api.get(BASE_URL + GET_CATEGORIES);
+        const data =  response.data;
+        return data.data;
+    
+  };
+  
+  const { isLoading: isLoadingCategory, error: errorCategories, data: categoriesData } = useQuery('categoryimages', fetchCategories);
 
-        }
 
-      } catch (error) {
-        // setError(error);
-      } finally {
-        // setLoading(false); // Set loading state to false after completion
-        setisLoadingCategory(false);
-      }
-    };
+  const headerStyles = { display: 'flex', flexDirection: 'column', marginBottom: '0.5rem' };
+  const fontFamily = {fontFamily:'RalewayExtraBoldItalic'};
+  const headerTypoGraphyStyles = { marginLeft: '1rem', marginTop: '1rem', color: 'text.primary', fontSize: '1.5rem', alignSelf: 'start' };
+  const paginatedGridStyles = { overflowX: 'auto', flexWrap: 'nowrap', marginBottom: '2rem', padding: '0.5rem' };
+  useEffect(() => {
+    
 
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      // setLoading(true); // Set loading state to indicate data fetching
-      try {
-        const token = localStorage.getItem(TOKEN);
-        if (token !== undefined && token !== null) {
-          const headers = new Headers();
-          headers.append('Authorization', `Bearer ${token}`);
-          setIsLoadingProduct(true);
-          const response = await fetch(BASE_URL + GET_PRODUCTS, {
-            method: 'GET',
-            headers,
-          });
-          const data = await response.json();
-          setProducts(data.data);
-          console.log(data.data);
-        }
-
-      } catch (error) {
-        // setError(error);
-      } finally {
-        // setLoading(false); // Set loading state to false after completion
-        setIsLoadingProduct(false);
+  
+  // const ImageListItemClickable = (props:any,categoryId:number) => { // Include categoryId prop
+    const navigate = useNavigate();
+  
+    const handleClick = (categoryId:number, categoryName:string) => {
+      // Handle potential missing categoryId or empty string
+      if (categoryId) {
+        navigate(`/category/${categoryId}/${categoryName}`); // Navigate to category details
+      } else {
+        console.warn('Missing categoryId prop for ImageListItem navigation.');
+      //   // Optionally: Handle missing categoryId (e.g., display error message)
       }
-    };
-
-    fetchProducts();
-  }, []);
-
-
+    }
+  // }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '1rem', alignItems: 'center'}}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '1rem' }}>
       <SearchBar />
-      <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '1rem', alignItems: 'center',justifyContent:'center' }}>
-        <Typography sx={{ marginLeft: '1rem', marginTop: '1rem',color:'text.primary',fontSize:'1.5rem',marginBottom:'1rem' }}>Categories</Typography>
-        <ImageList sx={{marginTop: '0px'}}>
-          {categoryImages != undefined && categoryImages.map((item) => (
-            <Card square sx={{ 'backgroundColor': 'white',  }}>
-              <CardContent sx={{ color: 'black', display: 'flex', flexDirection: 'column' }}>
-                <ImageListItem key={item.name} sx={{ width: '100%' }} cols={2}>
-                <Box sx={{width:'100px',height:'100px'}}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '1rem', justifyContent: 'start', padding: '0rem 1rem' }}>
+        <Typography sx={{marginTop: '1rem', color: 'text.primary', fontSize: '1.5rem', marginBottom: '0.5rem',...fontFamily }}>Categories</Typography>
+        <ImageList sx={{ marginTop: '0px' }} gap={16}>
+
+          {!isLoadingCategory ?categoriesData &&  categoriesData.map((item:Category) => (
+            <Card square sx={{ 'backgroundColor': 'white', boxShadow: '2', borderRadius: '0.5rem' }} onClick={()=>handleClick(item.id,item.name)}>
+              <CardContent sx={{ color: 'black', display: 'flex', flexDirection: 'column', padding: "0rem !important" }}>
+                <ImageListItem key={item.name} sx={{ width: '100%' }} cols={1}>
                   {item.image_path?.length > 0 ? <img src={BASE_URL + '/' + item.image_path[0]} style={{ 'objectFit': 'cover' }} width='100%' height='100%' alt={item.name} /> : null}
-                  </Box>
                 </ImageListItem>
-                <Typography sx={{ textTransform: 'capitalize', alignSelf: 'center', marginTop: '1rem' }}>{item.name}</Typography>
               </CardContent>
             </Card>
-          ))}
+          )) : <Box sx={{ display: 'flex' ,justifyItems:'center'}}>
+            <CircularProgress />
+          </Box>}
         </ImageList>
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center',marginBottom:'1rem'  }}>
-        <Typography sx={{ marginLeft: '1rem', marginTop: '1rem',color:'text.primary',fontSize:'1.5rem' }}>Explore</Typography>
+      
+      <Box sx={headerStyles}>
+        <Typography sx={{...headerTypoGraphyStyles,...fontFamily}} >Explore</Typography>
       </Box>
-      {!isLoadingProduct ? <Grid container spacing={2} style={{ overflowX: 'auto',flexWrap:'nowrap',marginBottom:'1rem',padding:'1rem'}}>
-        {products.map(product => (
-          <ProductCard key={product.pid} product={product} />
-        ))}
+      <PaginatedGrid flexDirection='row' apiUrl={BASE_URL + GET_PRODUCTS} style={paginatedGridStyles}/>
 
-      </Grid> : null}
-
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center',marginBottom:'1rem' }}>
-        <Typography sx={{ marginLeft: '1rem', marginTop: '1rem',alignSelf:'start',color:'text.primary',fontSize:'1.5rem' }}>Best Selling</Typography>
+      <Box sx={headerStyles}>
+        <Typography sx={{...headerTypoGraphyStyles,...fontFamily}}>Best Selling</Typography>
       </Box>
-      {!isLoadingProduct ? <Grid container spacing={2} style={{ overflowX: 'auto',flexWrap:'nowrap',marginBottom:'1rem',padding:'1rem' }}>
-      {products.map(product => (
-          <ProductCard key={product.pid} product={product} />
-        ))}
-      </Grid> : null}
+      <PaginatedGrid  flexDirection='row' apiUrl={BASE_URL + GET_PRODUCTS} style={paginatedGridStyles}/>
+
+   
     </Box>
   )
 }
