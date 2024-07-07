@@ -1,16 +1,19 @@
 import express from "express";
 export const authRouter = express.Router();
-import {signUp, signIn } from "../controllers/users.js";
+import {signUp, signIn,generateNewAccessToken } from "../controllers/users.js";
+import {generateAdharOtp,validateAdharOTP } from "../controllers/adhar.js";
 import {
   validateSignUpRequest,
   validateSignInRequest,
+  validateAdharOtpGenerateRequest,
+  validateAdharOtpSubmitRequest
 } from "../validators/auth.js";
-import { generateOtp,verifyOtp } from "../controllers/otp.js";
+import { tryCatchController } from "../utils/tryCatch.js";
 
-authRouter.route("/signin").post([validateSignInRequest], signIn);
-authRouter.route("/signup").post([validateSignUpRequest],signUp);
-authRouter.route("/otp/generate").post(generateOtp);
-authRouter.route("/otp/verify").post(verifyOtp);
-// authRouter.route("/otp/resend").get([validateSignUpRequest],resendOtp);
+authRouter.route("/signin").post([validateSignInRequest], tryCatchController(signIn));
+authRouter.route("/signup").post([validateSignUpRequest],tryCatchController(signUp));
+authRouter.route('/refreshToken').post(tryCatchController(generateNewAccessToken));
+authRouter.route('/otp/generate').post([validateAdharOtpGenerateRequest],tryCatchController(generateAdharOtp));
+authRouter.route('/otp/verify').post([validateAdharOtpSubmitRequest],tryCatchController(validateAdharOTP))
 
 
