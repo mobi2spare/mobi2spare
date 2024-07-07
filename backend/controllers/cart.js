@@ -1,136 +1,71 @@
 import { StatusCodes } from "http-status-codes";
-import { validateErrors } from "../validators/common_validation.js";
-import { ROLES } from "../constants/constants.js";
+import db from '../db/db.js'
 
 
 export const addItemToCart = async (req, res) => {
 
 
-    const userId = req.params['id'];
-    const { product_id } = req.body;
+    const { cart_id, product_id } = req.body;
+    const cartid = await db.one('INSERT INTO cartitems ( cart_id, product_id, quantity) VALUES ($1,$2,$3) ON CONFLICT(cart_id, product_id) DO UPDATE SET quantity=cartitems.quantity+1 RETURNING cart_id,quantity ', [cart_id, product_id, 1]);
 
-    try {
-        await req.pool.query('BEGIN');
-        const cardIdForUserQuery = 'SELECT id from Cart WHERE buyer_id = $1';
-        const result = await req.pool.query(cardIdForUserQuery, [userId]);
-        if (result.rows && result.rows.length > 0) {
-            await updateCartItem(req, result, product_id, userId);
-            await req.pool.query('COMMIT');
-            res.status(StatusCodes.OK).json({ message: 'Cart updated successfully!' });
+    return res.status(StatusCodes.OK).json({
+        success: true,
+        data: cartid
+    })
 
-        }
-        else {
-
-            if (req.userRoles == ROLES.GeneralUser) {
-                // Create cart entry for user in case not created during user sign up.
-                const result = await req.pool.query("INSERT INTO cart (buyer_id) VALUES($1) RETURNING id", [userId]);
-                await updateCartItem(req, result, product_id, userId);
-                await req.pool.query('COMMIT');
-                res.status(StatusCodes.OK).json({ message: 'Cart updated successfully!' });
-            }
-
-            else {
-
-                res.status(StatusCodes.FORBIDDEN).json({ 'message': 'Operation not permitted' });
-            }
-            ``
-
-        }
-    } catch (error) {
-        await req.pool.query('ROLLBACK')
-        console.error('Error adding category:', error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-    }
-
-    finally {
-        await req.pool.release();
-    }
-
-
-};
-
-export const getAllItemsInCartForUser = async (req, res) => {
-
-    const userId = req.params['id'];
-    try {
-        const result = await req.pool.query('SELECT p.name, p.price,ci.quantity FROM products p INNER JOIN cartitems ci ON ci.product_id = p.id INNER JOIN cart ON \
-                        cart.id = ci.cart_id WHERE cart.buyer_id = $1 ',[userId]);
-        res.status(StatusCodes.OK).json({
-            success: true,
-            data: result.rows,
-        });
-    }
-
-    catch (error) {
-        console.error('Error getting categories:', error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-
-    }
-
-    finally {
-        await req.pool.release();
-    }
-};
-
-export const removeItemFromCart = async (req, res) => {
-
-    const userId = req.params['id'];
-    const { product_id } = req.body;
-
-    try {
-        await req.pool.query('BEGIN');
-        const cardIdForUserQuery = 'SELECT id from Cart WHERE buyer_id = $1';
-        const result = await req.pool.query(cardIdForUserQuery, [userId]);
-        if (result.rows && result.rows.length > 0 && req.userRoles == ROLES.GeneralUser) {
-            await updateCartItem(req, result, product_id, userId, '-');
-            await req.pool.query('COMMIT');
-            res.status(StatusCodes.OK).json({ message: 'Item Removed From Cart!' });
-
-        }
-        else {
-            await req.pool.query('ROLLBACK')
-            res.status(StatusCodes.FORBIDDEN).json({ 'message': 'Operation not permitted' });
-
-        }
-
-
-    } catch (error) {
-        await req.pool.query('ROLLBACK')
-        console.error('Error adding category:', error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-    }
-
-    finally {
-        await req.pool.release();
-    }
-};
-
-
-
-async function updateCartItem(req, result, productId, userId, operator = '+') {
-    if (operator == '+' || operator == '-') {
-        const cartId = result.rows[0].id;
-        const updateQuantity = operator === '+' ? 1 : -1;
-        const updateCartItemQuery = `UPDATE CartItems SET quantity = quantity + $3 WHERE cart_id = $1 AND product_id = $2 RETURNING id,quantity`;
-        const updateResult = await req.pool.query(updateCartItemQuery, [cartId, productId, updateQuantity]);
-        if (updateResult.rows.length === 0) {
-            if (operator === '+') {
-                const insertCartItemQuery = `INSERT INTO CartItems (cart_id, product_id, quantity) VALUES ($1, $2, 1)`;
-                await req.pool.query(insertCartItemQuery, [cartId, productId]);
-            }
-
-        }
-        if (operator == '-') {
-            const newQty = updateResult.rows[0].quantity;
-            if (newQty == 0) {
-                const deleteCartItemQuery = `DELETE FROM CartItems WHERE cart_id = $1 AND product_id = $2`;
-                await req.pool.query(deleteCartItemQuery, [cartId, productId]);
-            }
-        }
-
-    
-    const updateCartQuery = 'UPDATE CART SET item_count = item_count + $2  WHERE buyer_id = $1';
-    await req.pool.query(updateCartQuery, [userId, updateQuantity]);
-    }
 }
+
+export const updateCartQuantity = async (req, res) => {
+
+    const { cart_id, product_id,quantity } = req.body;
+    if (quantity >= 1) {
+        await db.oneOrNone('UPDATE cartitems SET quantity = $1 WHERE  cart_id=$2 AND product_id=$3 RETURNING cart_id', [quantity,cart_id, product_id]);
+
+    }
+    else if (quantity === 0) {
+        await db.none('DELETE FROM cartitems where cart_id=$1 AND product_id=$2', [cart_id, product_id]);
+    }
+
+    return res.status(StatusCodes.OK).json({
+        success: true,
+    })
+
+};
+
+export const getItemsFromCartForCartId = async (req, res) => {
+
+    const cart_id = req.params['id'];
+    console.log(cart_id);
+    const query = `
+        SELECT products.quantity as quantity,cartitems.quantity as cartQuantity,products.price, products.id AS pid, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+        model.model_name as mname,ram_storage.configuration as configuration,
+        COALESCE(
+        json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
+        FILTER (WHERE attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
+        '[]'
+            ) AS attribute_info,
+                        COALESCE(json_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
+                FROM products
+                LEFT JOIN product_image_mapping pim ON products.id = pim.product_id
+                LEFT JOIN images ON images.id = pim.image_id
+                INNER JOIN categories ON products.category_id = categories.id
+                INNER JOIN brands ON products.brand_id = brands.id
+                INNER JOIN model on model.id = products.model_id
+                INNER JOIN ram_storage ON ram_storage.id = products.ram_storage_id
+                LEFT JOIN product_attributes ON products.id = product_attributes.product_id
+                LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
+                LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
+                LEFT JOIN cartitems ON cartitems.product_id = products.id
+                WHERE products.quantity > 0 AND cart_id=$1
+                GROUP BY products.id, categories.name, brands.name,cartitems.quantity,model.model_name,ram_storage.configuration`
+    const values = [cart_id]; // Parameters for prepared statement
+    const result = await db.manyOrNone(query, values);
+    return res.status(StatusCodes.OK).json({
+        success: true,
+        data: result
+    })
+
+
+}
+
 

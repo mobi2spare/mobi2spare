@@ -1,93 +1,193 @@
 import { StatusCodes } from "http-status-codes";
-import { validateErrors } from "../validators/common_validation.js";
-import { withTransaction } from "./transactions.js";
-import { uploadImage } from "../utils/utils.js";
+import { uploadProductImages } from "../utils/utils.js";
+import db from '../db/db.js'
+
+
+import pgPromise from 'pg-promise';
+const pgp = pgPromise({});
+
+export const createProductRequests = async (req, res) => {
+    let { brand_id, category_id, description, user_id, attribute_value_id, model_id, ram_storage_id } = req.body;
+    let productId;
+      await db.tx(async t => {
+        
+        const insertProduct = await t.one('INSERT INTO product_requests ( brand_id, category_id, description, buyer_id,model_id,ram_storage_id) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id', [brand_id, category_id, description, user_id, model_id, ram_storage_id]);
+        productId = insertProduct.id;
+  
+        if (attribute_value_id && Array.isArray(attribute_value_id)) {
+          const attributeQueries = attribute_value_id.map(attributeValueId => ({
+            text: 'INSERT INTO product_request_attributes (product_request_id, attribute_value_id) VALUES ($1, $2)',
+            values: [productId, attributeValueId],
+          }));
+  
+          await Promise.all(attributeQueries.map(aquery => t.none(aquery))); // Use Promise.all for parallel execution
+        }
+        return productId;
+      });
+  
+      return res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: 'Request created successfully!',
+        data:productId
+      });
+   
+  };
+
+export const createTemporaryRequestForSeller = async (req, res) => {
+
+    let { brand_id, category_id, quantity, description, price, user_id, attribute_value_id, model_id, ram_storage_id,
+        model_name, ram_storage_name, image_paths
+    } = req.body
+
+
+    const insertProduct = await db.one('INSERT INTO temporary_model_requests ( brand_id, category_id, quantity, description, seller_id,model_id,ram_storage_id, price,model_name,ram_storage_config,attribute_value_id,image_paths) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING request_id', [brand_id, category_id, quantity, description, user_id, model_id, ram_storage_id, price,
+        model_name, ram_storage_name, attribute_value_id, image_paths
+    ]);
+    return res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: 'Listing created successfully!',
+        data: insertProduct,
+    });
+
+}
 
 export const addProductForSeller = async (req, res) => {
 
-    if (validateErrors(req, res) == undefined) {
+    const { brand_id, category_id, quantity, description, price, user_id, attribute_value_id, model_id, ram_storage_id } = req.body;
 
-        const { name, brand_id, category_id, quantity, description, price, product_condition, seller_id, attribute_value_id } = req.body;
+    if (!model_id || !ram_storage_id) {
+
+        return createTemporaryRequestForSeller(req, res);
+
+    }
+    let productId;
+    await db.tx(async t => {
+        const insertProduct = await t.one('INSERT INTO products ( brand_id, category_id, quantity, description, seller_id,model_id,ram_storage_id, price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id', [brand_id, category_id, quantity, description, user_id, model_id, ram_storage_id, price]);
+        productId = insertProduct.id;
+        let attributeQueries;
+        if (attribute_value_id && Array.isArray(attribute_value_id)) {
+           
+                attributeQueries = attribute_value_id.map(attributeValueId => ({
+                    text: 'INSERT INTO product_attributes (product_id, attribute_value_id) VALUES ($1, $2)',
+                    values: [productId, attributeValueId],
+                }));
+            
+        }
+        await Promise.all(attributeQueries.map(aquery => t.none(aquery)));
+        return productId;
+    })
+
+    return res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: 'Product created successfully!',
+        data:productId
+    });
 
 
-        try {
+};
 
-            const result = await req.pool.query('INSERT INTO products (name, brand_id, category_id, quantity, description, seller_id,price, product_condition) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id', [name, brand_id, category_id, quantity, description, seller_id, price, product_condition]);
-            await req.pool.query('INSERT INTO product_attributes (product_id, attribute_value_id) VALUES ($1,$2)', [result.rows[0].id, attribute_value_id]);
+export const updateProductRequestWithImage = async (req, res) => {
+
+    const productId = req.params['id'];
+
+    const { imagePaths } = req.body;
+
+    if (productId != undefined && imagePaths && imagePaths.length == 2) {
+
+        const imagePathsToInsert = [{ 'image_path': imagePaths[0] }, { 'image_path': imagePaths[1] }];
+
+        db.tx(async t => {
+
+            // const imageInsertion = 
+            const updateImagePathQuery = pgp.helpers.insert(imagePathsToInsert, ['image_path'], 'images') + ' RETURNING id';
+
+            const res = await db.map(updateImagePathQuery, undefined, image => +image.id);
+
+            if (res && res.length == 2) {
+                const productMappingsToInsert = [{ 'product_request_id': productId, 'image_id': res[0] }, { 'product_request_id': productId, 'image_id': res[1] }];
+
+                const productMappingQuery = pgp.helpers.insert(productMappingsToInsert, ['product_request_id', 'image_id'], 'product_request_image_mapping');
+
+                await db.none(productMappingQuery);
+            }
+
+            else {
+                throw new Error('Failed to update images');
+            }
+
+
+            return res;
+
+        }).then(_ => {
             res.status(StatusCodes.CREATED).json({
                 success: true,
                 message: 'Listing created successfully!',
-                data: result.rows[0].id,
+
+            });
+        })
+
+            .catch(error => {
+                console.log(error.message)
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: error
+                })
             });
 
-        } catch (error) {
-            console.error('Error adding Item:', error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-        }
-
-        finally {
-            await req.pool.release();
-        }
     }
 
-};
+    else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+    }
+
+
+}
 
 export const updateProductWithImage = async (req, res) => {
 
     const productId = req.params['id'];
 
-    if (productId != undefined) {
+    const { imagePaths } = req.body;
 
-        try {
+    if (productId != undefined && imagePaths && imagePaths.length == 2) {
 
-            const { imagePath } = req.body;
+        const imagePathsToInsert = [{ 'image_path': imagePaths[0] }, { 'image_path': imagePaths[1] }];
 
-            if (imagePath) {
+        db.tx(async t => {
 
+            // const imageInsertion = 
+            const updateImagePathQuery = pgp.helpers.insert(imagePathsToInsert, ['image_path'], 'images') + ' RETURNING id';
 
-                await req.pool.query('BEGIN')
+            const res = await db.map(updateImagePathQuery, undefined, image => +image.id);
 
-                const result = await req.pool.query('INSERT INTO images (image_path) VALUES ($1) RETURNING ID', [imagePath]);
+            if (res && res.length == 2) {
+                const productMappingsToInsert = [{ 'product_id': productId, 'image_id': res[0] }, { 'product_id': productId, 'image_id': res[1] }];
 
-                if (result.rows.length >= 1) {
-                    const imageId = result.rows[0].id;
+                const productMappingQuery = pgp.helpers.insert(productMappingsToInsert, ['product_id', 'image_id'], 'product_image_mapping');
 
-                    await req.pool.query('INSERT INTO product_image_mapping (product_id, image_id) VALUES ($1,$2)', [productId, imageId]);
-
-                    await req.pool.query('COMMIT')
-
-                    res.status(StatusCodes.OK).json({ message: 'Listing updated successfully!' });
-
-                }
-
-                else {
-
-                    await req.pool.query('ROLLBACK')
-
-                    res.status(StatusCodes.OK).json({ message: 'Failed to update product!' });
-                }
-
-
+                await db.none(productMappingQuery);
             }
 
             else {
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-
+                throw new Error('Failed to update images');
             }
 
-        } catch (error) {
-            console.error('Error adding Item:', error);
-            await req.pool.query('ROLLBACK')
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
 
-        }
+            return res;
 
-        finally {
-            await req.pool.release();
-        }
+        }).then(_ => {
+            res.status(StatusCodes.CREATED).json({
+                success: true,
+                message: 'Listing created successfully!',
 
+            });
+        })
 
-
+            .catch(error => {
+                console.log(error.message)
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: error
+                })
+            });
 
     }
 
@@ -128,9 +228,7 @@ export const updateProductForSeller = async (req, res) => {
             console.error('Error adding Item:', error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
         }
-        finally {
-            await req.pool.release();
-        }
+
     }
 
 };
@@ -142,7 +240,7 @@ export const deleteProductForSeller = async (req, res) => {
 
     try {
 
-        const result = await req.pool.query('DELETE FROM  products WHERE id = $1', [productId]);
+        await db.any('DELETE FROM  products WHERE id = $1', [productId]);
 
         res.status(StatusCodes.CREATED).json({ message: 'Listing deleted successfully!' });
 
@@ -151,9 +249,7 @@ export const deleteProductForSeller = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
     }
 
-    finally {
-        await req.pool.release();
-    }
+
 
 
 };
@@ -164,7 +260,7 @@ export const getInfoForProduct = async (req, res) => {
     try {
         const query = 'SELECT products.*, json_agg(images.image_path) AS image_path FROM products LEFT JOIN product_image_mapping pim ON products.id = pim.product_id \
         LEFT JOIN images ON images.id = pim.image_id  WHERE products.id = $1 GROUP BY products.id';
-        const result = await req.pool.query(query, [productId]);
+        const result = await db.any(query, [productId]);
         console.log(result.rows[0]);
         res.status(StatusCodes.OK).json({
             success: true,
@@ -186,37 +282,39 @@ export const getAllProducts = async (req, res) => {
     try {
 
         const totalProductsQuery = 'SELECT COUNT(*) AS total FROM products';
-        const totalResult = await req.pool.query(totalProductsQuery);
-        const total = totalResult.rows[0].total; // Assuming a single row result
+        const totalResult = await db.any(totalProductsQuery);
+        const total = totalResult[0].total; // Assuming a single row result
 
         const offset = (page - 1) * limit;
 
         const query = `
-                SELECT products.price,products.id as pid, products.name, products.description,products.brand_id, products.category_id, categories.name as cname, brands.name as bname, COALESCE(
-                    json_agg(json_build_object(attributes.attribute_name, attribute_value.value)),
-                    '[]' 
-                  ) AS attribute_info,
-                  COALESCE(json_agg(images.image_path)FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path 
+        SELECT products.price, products.id AS pid, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+        COALESCE(
+        json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
+        FILTER (WHERE attribute_value.id IS NOT NULL AND attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
+        '[]'
+            ) AS attribute_info,
+                        COALESCE(json_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
                 FROM products
                 LEFT JOIN product_image_mapping pim ON products.id = pim.product_id
-                LEFT JOIN images ON images.id = pim.image_id 
+                LEFT JOIN images ON images.id = pim.image_id
                 INNER JOIN categories ON products.category_id = categories.id
-                INNER JOIN brands ON products.brand_id = brands.id 
+                INNER JOIN brands ON products.brand_id = brands.id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
-                INNER JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
-                INNER JOIN attributes ON attribute_value.id = attributes.id
-                GROUP BY products.id,categories.name,brands.name
+                LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
+                LEFT JOIN attribute_info ON attribute_value.id = attribute_info.id
+                WHERE products.quantity > 0
+                GROUP BY products.id, categories.name, brands.name
                 ORDER BY products.id ASC
-                LIMIT $1
+                LIMIT $1    
                 OFFSET $2`;
-
         const values = [limit, offset]; // Parameters for prepared statement
 
-        const result = await req.pool.query(query, values);
+        const result = await db.many(query, values);
 
         res.status(StatusCodes.OK).json({
             success: true,
-            data: result.rows,
+            data: result,
             pagination: {
                 total,  // Total number of products (optional if not included in totalProductsQuery)
                 limit,
@@ -234,13 +332,73 @@ export const getAllProducts = async (req, res) => {
 
     }
 
-    finally {
-        await req.pool.release();
-    }
+
 };
 
 export const uploadProductImage = async (req, res) => {
 
-    return await uploadImage(req, res);
+    return await uploadProductImages(req, res);
 
 }
+
+export const getAllProductsForCategory = async (req, res) => {
+
+    const id = req.params['id'];
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    try {
+
+        const totalProductsQuery = 'SELECT COUNT(*) AS total FROM products WHERE category_id = $1';
+        const totalResult = await db.any(totalProductsQuery, [id]);
+        const total = totalResult[0].total; // Assuming a single row result
+
+        const offset = (page - 1) * limit;
+        const query = `
+                    SELECT products.price, products.id AS pid, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+                    COALESCE(
+                    json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
+                    FILTER (WHERE attribute_value.id IS NOT NULL AND attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
+                '[]'
+                        ) AS attribute_info,
+                        COALESCE(json_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
+                FROM products
+                LEFT JOIN product_image_mapping pim ON products.id = pim.product_id
+                LEFT JOIN images ON images.id = pim.image_id
+                INNER JOIN categories ON products.category_id = categories.id
+                INNER JOIN brands ON products.brand_id = brands.id
+                LEFT JOIN product_attributes ON products.id = product_attributes.product_id
+                LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
+                LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
+                WHERE products.category_id = $1
+                AND products.quantity > 0
+                GROUP BY products.id, categories.name, brands.name
+                ORDER BY products.id ASC
+                LIMIT $2    
+                OFFSET $3`;
+
+        const values = [id, limit, offset]; // Parameters for prepared statement
+
+        const result = await db.manyOrNone(query, values);
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            data: result,
+            pagination: {
+                total,  // Total number of products (optional if not included in totalProductsQuery)
+                limit,
+                page,
+                offset,
+                totalPages: Math.ceil(total / limit), // Calculate total pages based on total and limit
+            },
+        });
+
+    }
+
+    catch (error) {
+        console.error('Error getting products:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+
+    }
+
+
+};

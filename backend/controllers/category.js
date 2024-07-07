@@ -1,12 +1,12 @@
 import { StatusCodes } from "http-status-codes";
-import { validationResult } from "express-validator";
 import { validateErrors } from "../validators/common_validation.js";
-import { uploadImage } from "../utils/utils.js";
+import { uploadCategoryImage  as uploadImage } from "../utils/utils.js";
+import db from '../db/db.js'
 
-
-export const addCategory = async (req, res) => {
+export const addCategory = async (req, res, next) => {
 
     if (validateErrors(req, res) == undefined) {
+
         const { name } = req.body;
 
         if (!name) {
@@ -14,49 +14,42 @@ export const addCategory = async (req, res) => {
                 message: "Please Provide Required Information",
             });
         }
-        try {
-            const result = await req.pool.query('SELECT * FROM categories WHERE name = $1', [name]);
-            const category = result.rows[0];
 
-            if (category) {
-                return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Category already exists",
-                });
-            } else {
-                const result = await req.pool.query('INSERT INTO categories (name) VALUES ($1) RETURNING id', [name]);
+        const result = await db.any('SELECT * FROM categories WHERE name = $1', [name]);
+        const category = result.length > 0 && result[0];
 
-                res.status(StatusCodes.CREATED).json({ message: 'Category created successfully!' });
-            }
-        } catch (error) {
-            console.error('Error adding category:', error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
+        if (category) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Category already exists",
+            });
+        } else {
+            await db.any('INSERT INTO categories (name) VALUES ($1)', [name]);
+
+            res.status(StatusCodes.CREATED).json({ message: 'Category created successfully!' });
         }
 
-        finally {
-            await req.pool.release();
-        }
     }
 
 };
 
-export const getInfoForCategory = async (req, res) =>{
+export const getInfoForCategory = async (req, res) => {
 
     const categoryId = req.params['id'];
     console.log(categoryId);
     try {
         const query = 'SELECT categories.*, json_agg(images.image_path) AS image_path FROM categories LEFT JOIN category_image_mapping cim ON categories.id = cim.category_id \
         LEFT JOIN images ON images.id = cim.image_id  WHERE categories.id = $1 GROUP BY categories.id';
-        const result = await req.pool.query(query, [categoryId]);
-        console.log(result.rows[0]);
+        const result = await db.any(query, [categoryId]);
         res.status(StatusCodes.OK).json({
             success: true,
-            data: result.rows[0]
+            data: result
         });
-        
+
     } catch (error) {
         console.error('Error getting categories:', error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
     }
+
 
 }
 
@@ -75,7 +68,7 @@ export const updateCategoryWithImage = async (req, res) => {
 
                 await req.pool.query('BEGIN')
 
-                const result = await req.pool.query('INSERT INTO images (image_path) VALUES ($1) RETURNING ID', [imagePath]);
+                const result = await db.any('INSERT INTO images (image_path) VALUES ($1) RETURNING ID', [imagePath]);
 
                 if (result.rows.length >= 1) {
                     const imageId = result.rows[0].id;
@@ -110,13 +103,6 @@ export const updateCategoryWithImage = async (req, res) => {
 
         }
 
-        finally {
-            await req.pool.release();
-        }
-
-
-
-
     }
 
     else {
@@ -128,36 +114,24 @@ export const updateCategoryWithImage = async (req, res) => {
 
 export const getAllCategories = async (req, res) => {
 
-    try {
 
-        const query = `
-            SELECT categories.*,  json_agg(images.image_path) AS image_path
-            FROM categories
-            LEFT JOIN category_image_mapping cim ON categories.id = cim.category_id
-            LEFT JOIN images ON images.id = cim.image_id  
-            GROUP BY categories.id
-            ORDER BY id ASC
+    const query = `
+        SELECT categories.*,  json_agg(images.image_path) AS image_path
+        FROM categories
+        LEFT JOIN category_image_mapping cim ON categories.id = cim.category_id
+        LEFT JOIN images ON images.id = cim.image_id  
+        GROUP BY categories.id
+        ORDER BY id ASC
 
-        `;
+    `;
 
-        const result = await req.pool.query(query);
+    const result = await db.any(query);
 
-        res.status(StatusCodes.OK).json({
-            success: true,
-            data: result.rows,
-        });
+    res.status(StatusCodes.OK).json({
+        success: true,
+        data: result,
+    });
 
-    }
-
-    catch (error) {
-        console.error('Error getting categories:', error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-
-    }
-
-    finally {
-        await req.pool.release();
-    }
 };
 
 export const updateCategory = async (req, res) => {
@@ -165,51 +139,22 @@ export const updateCategory = async (req, res) => {
     const id = req.params['id'];
     if (validateErrors(req) == undefined) {
         const { name } = req.body;
-
-        try {
-            const result = await req.pool.query('UPDATE categories set name = $1 WHERE id = $2', [name, id]);
-            // TODO PAGINATION?
-            res.status(StatusCodes.OK).json({
-                success: true,
-                data: result.rows,
-            });
-        }
-
-        catch (error) {
-            console.error('Error updating category:', error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-
-        }
-
-        finally {
-            await req.pool.release();
-        }
+        await db.any('UPDATE categories set name = $1 WHERE id = $2', [name, id]);
+        res.status(StatusCodes.OK).json({
+            success: true,
+        });
     }
+
 };
 
 
 export const deleteCategory = async (req, res) => {
 
     const id = req.params['id'];
-    try {
-        const result = await req.pool.query('DELETE FROM categories WHERE id = $1', [id]);
-        // TODO PAGINATION?
+        await db.any('DELETE FROM categories WHERE id = $1', [id]);
         res.status(StatusCodes.OK).json({
             success: true,
-            data: result.rows,
         });
-    }
-
-    catch (error) {
-        console.error('Error deleting category:', error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: StatusCodes.INTERNAL_SERVER_ERROR.toString() });
-
-    }
-
-    finally {
-        await req.pool.release();
-    }
-
 
 };
 
