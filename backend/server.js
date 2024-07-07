@@ -27,15 +27,6 @@ import { requestRouter } from "./routes/requests.js";
 // const productRoutes = require("./routes/product");
 // const bannersRoutes = require("./routes/banners");
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyC79ZPxKSwUj-BMM9YtPskgJGHpE_Z2_g0",
-//   authDomain: "mobi2spare-a0b40.firebaseapp.com",
-//   projectId: "mobi2spare-a0b40",
-//   storageBucket: "mobi2spare-a0b40.appspot.com",
-//   messagingSenderId: "196620416270",
-//   appId: "1:196620416270:web:87df3efddad064ff42d35f",
-//   measurementId: "G-ELTVQ1FB1W"
-// };
 
 // export const firebaseApp = initializeApp(firebaseConfig);
 // export const auth = getAuth(firebaseApp);
