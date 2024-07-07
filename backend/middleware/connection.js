@@ -16,8 +16,8 @@ export const acquireConnection = async (req, res, next) => {
       req.pool = await pool.connect();
       next();
     } catch (error) {
-      console.error('Error acquiring connection:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      throw new Error('Error acquiring connection')
+
     }
   };
   
