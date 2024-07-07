@@ -18,3 +18,8 @@ OTP_SECRET_KEY = 'any secret'
 REFRESH_SECRET = 'any secret'
 SUREPASS_ADHAR_GENERATE_URL ='https://sandbox.surepass.io/api/v1/aadhaar-v2/generate-otp'
 SUREPASS_ADHAR_VERIFY_URL ='https://sandbox.surepass.io/api/v1/aadhaar-v2/submit-otp'
+
+In sql/mobi2 spare apis, you will find the existing api collection. This can be imported into thunderclient in vscode. Please keep this updated as we make api changes.
+Most requests will need a token. A token can be generated using sign in request from auth folder in mobi2spare.
+This can be added to the mobi2spare collection setting -> auth.
+Please ensure you remove this token before committing any changes to this collection
