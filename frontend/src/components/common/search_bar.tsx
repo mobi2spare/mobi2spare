@@ -17,7 +17,7 @@ export default function SearchBar(props:any) {
     };
 
     return (
-        <Box>
+        <Box sx={{display:'flex',alignSelf:'center'}}>
             <FormControl>
                 <TextField
                  sx={{

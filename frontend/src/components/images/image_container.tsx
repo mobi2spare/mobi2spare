@@ -1,4 +1,3 @@
-
 import { Box } from '@mui/material'
 import mobilelogo from '../../assets/mobilelogo.png';
 

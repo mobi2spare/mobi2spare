@@ -14,7 +14,7 @@ import { useUI } from '../../../contexts/ui.context';
 // import { siteSettings } from '../../../settings/site-settings';
 import { Link } from 'react-router-dom';
 // import { useLogoutMutation } from '../../../framework/basic-rest/auth/use-logout';
-import { AuthContext } from '../../../contexts/auth.context';
+import { AuthContext } from '../../../contexts/auth/auth.context';
 import { SIGN_IN } from '../../../router/router-path';
 
 const social = [

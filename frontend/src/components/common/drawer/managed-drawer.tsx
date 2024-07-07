@@ -1,7 +1,7 @@
 import Drawer from "rc-drawer";
 import { useUI } from "../../../contexts/ui.context";
 import motionProps from "./motion";
-import Cart from "../../cart/cart";
+// import Cart from "../../cart/cart";
 
 const ManagedDrawer = () => {
 	const { displayCart, closeCart } = useUI();
@@ -14,7 +14,7 @@ const ManagedDrawer = () => {
 			// contentWrapperStyle={contentWrapperCSS}
 			{...motionProps}
 		>
-			<Cart />
+			{/* <Cart /> */}
 		</Drawer>
 	);
 };

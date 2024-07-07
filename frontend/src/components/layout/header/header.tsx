@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 // import logo from '../../assets/logo1.png';
-import { AuthContext } from "../../../contexts/auth.context";
+import { AuthContext } from "../../../contexts/auth/auth.context";
 import { SIGN_IN } from "../../../router/router-path";
 // import { addActiveScroll } from "../../../utils/add-active-scroll";
 // import CartButton from "../../cart/cart-button";

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../../contexts/auth.context';
+import { AuthContext } from '../../../contexts/auth/auth.context';
 import { useUI } from '../../../contexts/ui.context';
 // import CartButton from '../../cart/cart-button';
 import { Drawer } from '../../common/drawer/drawer';

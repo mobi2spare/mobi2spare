@@ -14,7 +14,7 @@ import { MENU_LABELS } from '../../constants/constants';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SellIcon from '@mui/icons-material/Sell';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
-import { AuthContext } from '../../contexts/auth.context';
+import { AuthContext } from '../../contexts/auth/auth.context';
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
