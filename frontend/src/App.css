@@ -38,3 +38,107 @@
 }
 
 
+@font-face {
+  font-family: 'MyriadProRegular'; /* Replace with your font name */
+  src: url('./fonts/myriad/myriadProRegular.OTF') format('truetype');
+}
+
+@font-face {
+  font-family: 'RalewayExtraBoldItalic'; /* Replace with your font name */
+  src: url('./fonts/Raleway/ralewayExtraBoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'RalewayExtraBold'; /* Replace with your font name */
+  src: url('./fonts/Raleway/ralewayExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'RalewayBold'; /* Replace with your font name */
+  src: url('./fonts/Raleway/ralewayBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'SegoeUI'; /* Replace with your font name */
+  src: url('./fonts/segoe/segoeui.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'SegoeUIBold'; /* Replace with your font name */
+  src: url('./fonts/segoe/segoeuibold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'MontserratBold'; /* Replace with your font name */
+  src: url('./fonts/Montserrat/montserratBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'MontserratSemiBold'; /* Replace with your font name */
+  src: url('./fonts/Montserrat/montserratSemiBold.ttf') format('truetype');
+}
+
+.MuiInputBase-root {
+  border-radius: 20px !important;
+}
+
+.MuiBottomNavigationAction-label {
+  font-family: 'SegoeUI' !important;
+}
+
+.MuiInputBase-formControl {
+  width: 100%;
+}
+
+
+
+.Mui-selected{
+  color: black !important;
+}
+
+
+
+.MuiNativeSelect-select , .MuiNativeSelect-select  > option{
+  /* Styles for all options */
+  background-color: white  !important;
+  color: #1F255A;
+  letter-spacing: 1.5rem;
+  text-transform: capitalize;
+  font-family: 'RalewayExtraBold';
+}
+
+.MuiOutlinedInput-notchedOutline  {
+  border-color: rgba(0, 0, 0, 0.13) !important;
+  
+}
+
+.MuiCardMedia-img {
+  height: 100%;
+  width: 100%;
+}
+
+.appbar-title {
+  font-family: 'RalewayBold' !important;
+  text-transform: uppercase;
+  color: #1F255A;
+  font-size: 1.2rem !important;
+}
+
+.icon-color  {
+  justify-self: flex-start;
+  color: #1F255A;
+}
+
+.error-message {
+  color: red;
+}
+
+.MuiCardContent-root:last-child {
+  padding-bottom: 1rem !important;
+}
+
+.muiTabs {
+    /* color: theme.palette.text.secondary, // Selected tab color */
+    color: white;
+    background-color: orangered;
+}

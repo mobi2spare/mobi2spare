@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import Counter from "../components/common/counter";
 import Button from "../components/ui/button";
-import { AuthContext } from "../contexts/auth.context";
+import { AuthContext } from "../contexts/auth/auth.context";
 import { useCart } from "../contexts/cart/cart.context";
 import { useUI } from "../contexts/ui.context";
 import { generateCartItem } from "../utils/generate-cart-item";

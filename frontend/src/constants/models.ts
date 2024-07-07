@@ -6,12 +6,60 @@ export interface Category {
 
 export interface Product {
     image_path : string[],
-    pid : number,
+    id : number,
+    name : string,
+    price : number,
+    cname : string,
+    bname : string,
+    description : string,
+    mname? : string,
+    configuration? : string
+    attribute_info : []
+}
+
+export interface CartProduct {
+    image_path : string[],
+    id : number,
     name : string,
     price : number,
     cname : string,
     bname : string,
     description : string,
     attribute_info : []
+    cartQuantity : number,
+    mname: string,
+    configuration: string
+    quantity:number,
+    isChecked?: boolean 
 }
 
+export interface Brand {
+    name : string,
+    id : number,
+    category_id:number
+}
+
+export interface Model {
+    id : number,
+    name : string,
+    brand_id : number,
+    configuration : [string]
+
+}
+
+export interface Attributes {
+    categoryid : number,
+    name : string,
+    category_attribute_values : [{string:string}]
+}
+
+export interface RamStorageConfig {
+    id : number,
+    name : string,
+
+}
+
+export interface RequestData {
+    myRequests:Product[],
+    otherRequests:Product[]
+}

@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
-import logo from './logo.svg';
+import type {} from '@mui/lab/themeAugmentation';
 import './App.css';
 import Home from './pages/home';
 import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route, Outlet } from 'react-router-dom'
 import Login from './pages/login';
 import SignUp from './pages/signup';
-import { AuthContext, AuthProvider } from './contexts/auth.context';
-import { REGISTER, SIGN_IN, OTP, USERHOME } from './router/router-path';
+import { AuthContext, AuthProvider } from './contexts/auth/auth.context';
+import { REGISTER, SIGN_IN, OTP, USERHOME, PRODUCT_CATEGORY, PRODUCT_BUY_SELL_DETAILS, PRODUCT_REQUEST_DETAILS, CART, REQUESTS } from './router/router-path';
 import { ToastContainer } from 'react-toastify';
 import Otp from './pages/otp';
 import UserHome from './pages/userhome';
@@ -17,9 +17,16 @@ import SimpleBottomNavigation from './components/nav/bottomnavigation';
 import SingleProduct from './pages/singleproduct';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BottomTabProvider } from './contexts/bottom.context';
-import { Box } from '@mui/material';
+import { Box, Shadows } from '@mui/material';
 import Layout from './components/common/appbar';
 import { PrivateRoute } from './components/auth/private_route';
+import CategoryProducts from './pages/categoryproducts';
+import {ProductDetails} from './pages/buysell/productdetails';
+import { Provider } from 'react-redux';
+import {store} from './store/store';
+import ProductRequestDetails from './pages/buysell/productrequestdetails';
+import ShoppingCart from './pages/cart/cart';
+import Requests from './pages/requests/requests';
 
 
 function App() {
@@ -32,7 +39,7 @@ function App() {
 
       },
       text: {
-        primary: '#1F255A',
+        primary: '#24293D',
         secondary: '#FFFFFF',
 
 
@@ -44,7 +51,7 @@ function App() {
 
     },
     shape: {
-      borderRadius: 40
+      borderRadius: 10
       // borderRadius: '20px',
     }
   });
@@ -66,21 +73,27 @@ function App() {
 
       <ThemeProvider theme={theme}>
         <Layout>
-          <Outlet />
+        <Provider store={store}>
+       
           <Routes>
-
-
             <Route path='/' element={<Home />} />
             <Route path={SIGN_IN} element={<Login />} />
             <Route path={REGISTER} element={<SignUp />} />
             <Route path={OTP} element={<Otp />} />
+            
             <Route element={<PrivateRoute />}>
               <Route path={USERHOME} element={<UserHome />} />
+              <Route path={PRODUCT_CATEGORY} element={<CategoryProducts />} />
+              <Route path={PRODUCT_BUY_SELL_DETAILS} element={<ProductDetails/>} />
+              <Route path={PRODUCT_REQUEST_DETAILS} element={<ProductRequestDetails />} />
+              <Route path={CART} element={<ShoppingCart />} />
+              <Route path={REQUESTS} element={<Requests />} />
             </Route>
+            
             <Route path="singleproduct" element={<SingleProduct />} />
 
-
           </Routes>
+         
 
           <Box>
             <BottomTabProvider>
@@ -89,8 +102,9 @@ function App() {
           </Box>
 
           <ToastContainer />
+          </Provider>
         </Layout>
-
+      
       </ThemeProvider>
       {/* */}
     </AuthProvider>

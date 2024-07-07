@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50.348" height="50.344" viewBox="0 0 50.348 50.344">
+  <g id="Group_465" data-name="Group 465" transform="translate(-189.749 -826.602)">
+    <g id="Group_109" data-name="Group 109">
+      <g id="Group_108" data-name="Group 108">
+        <path id="Path_59" data-name="Path 59" d="M533.815,47.865l-.168.416-.542,1.354L524.392,71.4l-21.774-8.713-1.758-.705c.019-.061.042-.114.065-.175A25.165,25.165,0,0,1,533.643,47.8Z" transform="translate(-309.365 780.613)" fill="#1f255a"/>
+        <path id="Path_60" data-name="Path 60" d="M585.831,83.56c-.023.057-.046.111-.072.168L584,83.022,562.57,74.446l8.713-21.767.542-1.354.168-.416c.324.133.644.271.961.416A25.171,25.171,0,0,1,585.831,83.56" transform="translate(-347.543 777.568)" fill="#f15a24"/>
+        <path id="Path_61" data-name="Path 61" d="M570.694,121.912a25.162,25.162,0,0,1-32.474,13.911l.069-.172.641-1.6,8.576-21.423,21.427,8.576Z" transform="translate(-332.479 739.384)" fill="#1f255a"/>
+        <path id="Path_62" data-name="Path 62" d="M521.561,97.349l-8.576,21.423-.641,1.6-.069.172-.172-.069c-.08-.034-.164-.065-.244-.1a25.151,25.151,0,0,1-13.831-32.44l1.758.705Z" transform="translate(-306.534 754.665)" fill="#f15a24"/>
+      </g>
+      <path id="Path_63" data-name="Path 63" d="M547.823,74.261a23.257,23.257,0,1,1-10.235-19.274,23.233,23.233,0,0,1,10.235,19.274" transform="translate(-309.638 777.513)" fill="#fff"/>
+    </g>
+    <text id="Sell" transform="translate(194 859)" fill="#f15a24" font-size="20" font-family="SegoeUI-Bold, Segoe UI" font-weight="700"><tspan x="0" y="0">SELL</tspan></text>
+  </g>
+</svg>

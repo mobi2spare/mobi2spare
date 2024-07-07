@@ -11,7 +11,7 @@ import {
 } from "../../../router/router-path";
 import http from "../../../utils/http";
 import { useContext } from "react";
-import { AuthContext } from "../../../contexts/auth.context";
+import { AuthContext } from "../../../contexts/auth/auth.context";
 import { TOKEN } from "../../constants/constants";
 
 export interface OtpInputType {

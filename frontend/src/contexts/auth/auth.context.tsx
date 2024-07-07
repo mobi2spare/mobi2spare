@@ -1,15 +1,19 @@
 import { ReactNode, createContext, useState } from 'react';
-import { TOKEN } from '../constants/constants';
+import { TOKEN } from '../../constants/constants';
+import Cookies from 'js-cookie';
 
 type Props = {
   children?: ReactNode;
 };
 
-type User = {
+export type User = {
   id: string;
   name: string;
   organization : string;
   phoneNumber: string;
+  role : string
+  address : string,
+  cartId : number
 };
 
 type IAuthContext = {
@@ -22,7 +26,7 @@ type IAuthContext = {
 };
 
 const loggedInUser = localStorage.getItem('user');
-const jwtToken = localStorage.getItem(TOKEN);
+const jwtToken = Cookies.get(TOKEN);
 
 const initialState = {
   authenticated: loggedInUser && jwtToken ? true : false,

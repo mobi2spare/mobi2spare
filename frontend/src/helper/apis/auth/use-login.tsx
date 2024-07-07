@@ -11,8 +11,10 @@ import {
 } from "../../../router/router-path";
 import http from "../../../utils/http";
 import { useContext } from "react";
-import { AuthContext } from "../../../contexts/auth.context";
+import { AuthContext } from "../../../contexts/auth/auth.context";
 import { TOKEN } from "../../constants/constants";
+import { REFRESHTOKEN } from "../../../constants/constants";
+import Cookies from "js-cookie";
 
 export interface LoginInputType {
   phoneNumber: string;
@@ -50,37 +52,18 @@ export const useLoginMutation = () => {
         'name' : user.username,
         'organization' : user.organization,
         'address' : user.address,
-        'id' : data.data.user.id
-
+        'id' : data.data.user.id,
+        'role':'GeneralUser',
+        'cartId':user.cartId
 
       }
-      localStorage.setItem(TOKEN, data.data.user.token);
+      Cookies.set(TOKEN, data.data.user.token,{ secure: true });
+      Cookies.set(REFRESHTOKEN, data.data.user.refreshToken,{ secure: true });
       localStorage.setItem('user', JSON.stringify(userInfo));
       setUser(userInfo);
       setAuthenticated(true);
-      
-      // http.get(`/api/users/${tokenData.id}`).then((res) => {
-      //   setUser(res.data)
-      //   localStorage.setItem('user', JSON.stringify(res.data));
-      // });
-
-      // if (data.data.status === statusPending) {
-      //   toast.warn("Please complete the KYC");
-      //   setAuthenticated(true);
-
-      //   navigate(KYC_VERIFY_STEP_1);
-      //   return;
-      // }
-
-      /*       const userResponse = await me(data.data.id);
-      setUser(userResponse.data);
-      console.log('userResponse.data.data: ', userResponse.data); */
-
       navigate(USERHOME);
 
-      // Cookies.set('auth_token', data.token);
-      // authorize();
-      // closeModal();
     },
     onError: (data: any) => {
       toast.error(data.response.data.message,{position:'top-center'});

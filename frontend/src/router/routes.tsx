@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Navigate, Outlet, Route, Routes as Router } from "react-router-dom";
 import App from "../App";
 // import Layout from "../components/layout/layout";
-import { AuthContext } from "../contexts/auth.context";
+import { AuthContext } from "../contexts/auth/auth.context";
 import { TOKEN } from "../constants/constants";
 // import AddProductPage from "../pages/add-product";
 // import KycVerifyStepOne from "../pages/kyc-verify-step-1";
