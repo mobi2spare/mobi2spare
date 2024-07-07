@@ -15,3 +15,11 @@ export const validateSignInRequest = [
     .withMessage(validationMessages.PASSWORD_REQUIRED_MESSAGE),
 ];
 
+export const validateAdharOtpGenerateRequest = [
+  check('adharNumber').notEmpty().withMessage(validationMessages.ADHAR_NUMBER_INVALID_MESSAGE)
+]
+
+export const validateAdharOtpSubmitRequest = [
+  check('client_id').notEmpty().withMessage(validationMessages.ADHAR_NUMBER_INVALID_MESSAGE),
+  check('otp').notEmpty().withMessage(validationMessages.ADHAR_NUMBER_INVALID_MESSAGE)
+]

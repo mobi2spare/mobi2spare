@@ -14,11 +14,13 @@ export function verifyAndGetUserRoles(req, res, next) {
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (decoded.role == undefined) {
+        const decodedAccessToken = jwt.verify(token, process.env.JWT_SECRET);
+        if (decodedAccessToken.role == undefined) {
             return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid User Access' });
         }
-        req.userRoles = decoded.role; // Store roles in request object
+        req.userRoles = decodedAccessToken.role; // Store roles in request object
+        req.userId = decodedAccessToken.userId;
+        console.log(req.userId);
         next();
     } catch (err) {
         return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });
@@ -29,6 +31,12 @@ export function validateErrors (req, res){
     const errors = validationResult(req);
     console.log(errors);
   if (!errors.isEmpty()) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Failed to register user' });
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Request failed. Please try again.' });
   }
+}
+
+function isAdmin(user) {
+  // Replace this with your logic to check if the user is an admin
+  // This could involve checking a user role in the database or a flag in the user object
+  return user.role === 'admin';
 }
