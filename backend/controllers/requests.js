@@ -10,7 +10,7 @@ export const fetchRequestedFeedForUser = async (req, res) => {
         model.model_name as mname,ram_storage.configuration as configuration,
         model.id as model_id,ram_storage.id as  configuration_id,
         COALESCE(
-        json_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
+        json_agg(DISTINCT jsonb_build_object('attribute_value_id',attribute_value.id,'attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
         FILTER (WHERE attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
         '[]'
             ) AS attribute_info,
@@ -34,7 +34,7 @@ export const fetchRequestedFeedForUser = async (req, res) => {
                 product_requests.brand_id, product_requests.category_id,
                 model.id as model_id,ram_storage.id as  configuration_id,
                 COALESCE(
-                json_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
+                json_agg(DISTINCT jsonb_build_object('attribute_value_id',attribute_value.id,'attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
                 FILTER (WHERE attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
                 '[]'
                     ) AS attribute_info,

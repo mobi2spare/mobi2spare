@@ -24,6 +24,7 @@ export interface Product {
 export interface AttributeInfo {
     attribute_name:string,
     attribute_value : string
+    attribute_value_id : number
 }
 
 export interface CartProduct extends Product{

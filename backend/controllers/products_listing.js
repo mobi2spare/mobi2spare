@@ -309,7 +309,8 @@ export const getAllProducts = async (req, res) => {
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
                 INNER JOIN model ON  products.model_id = model.id
-                INNER JOIN ram_storage ON ram_storage.id = model.id
+                INNER JOIN model_ram_storage_mapping ON model_ram_storage_mapping.model_id = model.id
+				LEFT JOIN ram_storage ON ram_storage.id = model_ram_storage_mapping.ram_storage_id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.id = attribute_info.id
@@ -357,7 +358,8 @@ export const getAllProductsForCategory = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     try {
-
+        console.log(page);
+        console.log(limit);
         const totalProductsQuery = 'SELECT COUNT(*) AS total FROM products WHERE category_id = $1';
         const totalResult = await db.any(totalProductsQuery, [id]);
         const total = totalResult[0].total; // Assuming a single row result
@@ -378,7 +380,8 @@ export const getAllProductsForCategory = async (req, res) => {
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
                 INNER JOIN model ON  products.model_id = model.id
-                INNER JOIN ram_storage ON ram_storage.id = model.id
+                INNER JOIN model_ram_storage_mapping ON model_ram_storage_mapping.model_id = model.id
+				LEFT JOIN ram_storage ON ram_storage.id = model_ram_storage_mapping.ram_storage_id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id

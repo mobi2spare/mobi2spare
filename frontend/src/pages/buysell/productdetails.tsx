@@ -94,7 +94,7 @@ export const ProductDetails = () => {
             }
 
             let attribute_value_ids: number[] = [];
-            selectedAttributes.forEach((value, idx) => {
+            selectedAttributes.forEach((value, _) => {
                 attribute_value_ids.push(parseInt(value[0]));
 
             })
@@ -434,9 +434,9 @@ export const ProductDetails = () => {
     useEffect(() => {
         const categoryAttributeMap = new Map();
         attributesData && attributesData.map((attribute: Attributes, _: number) => {
-            const categoryid = attribute['categoryid'];
-            const attributeName = attribute['name'];
-            const values = attribute['category_attribute_values'];
+            const categoryid = attribute.categoryid;
+            const attributeName = attribute.name;
+            const values = attribute.category_attribute_values;
             if (categoryid === selectedCategoryId || selectedCategoryId === -1) {
                 categoryAttributeMap.set(attributeName, values);
             }
@@ -447,10 +447,12 @@ export const ProductDetails = () => {
         let tempIdMap = new Map();
         
         productToSell?.attribute_info.forEach((attribute:AttributeInfo)=>{
-            tempIdMap.set(attribute.attribute_name,attribute.attribute_value);
+            tempIdMap.set(attribute.attribute_name,[attribute.attribute_value_id, attribute.attribute_value] || []);
+            
         })
         console.log(tempIdMap);
         setSelectedAttributes(tempIdMap);
+        console.log(selectedAttributes);
 
     }, [attributesData, selectedCategoryId]);
 
@@ -511,8 +513,9 @@ export const ProductDetails = () => {
                                 items={attributesMap.get(attribute)} // Access the value (attributes array)
                                 title={attribute} // Access the key (attribute name)
                                 onChange={handleAttributeChange}
-                                itemValue={selectedAttributes.get(attribute) && selectedAttributes.get(attribute)[1] || ""} // Assuming itemValue is an empty string here
+                                itemValue={selectedAttributes.get(attribute) && selectedAttributes.get(attribute)[1]|| ""} // Assuming itemValue is an empty string here
                             />
+                            
 
                             </Box>
 
