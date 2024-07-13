@@ -67,7 +67,7 @@ export const deleteRequestForUser = async (req,res)=>{
 
     let userId = req.params['userId'];
     const deleteUserIdQuery = 'DELETE FROM product_requests WHERE product_requests.buyer_id=$1'
-    const values = [userId]; // Parameters for prepared statement
+    const values = [userId]; 
     await db.none(deleteUserIdQuery, values);
     return res.status(StatusCodes.OK).json({
         success: true,

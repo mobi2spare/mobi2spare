@@ -9,18 +9,24 @@ import api from '../../utils/network_requests';
 import { toast } from 'react-toastify';
 import { User } from '../../contexts/auth/auth.context';
 import { USER } from '../../constants/constants';
+import { Product } from '../../constants/models';
 
 interface CartAddInfo  {
     product_id : number,
     cart_id : number
 }
 
+interface ProductProps {
+    product:Product
+}
 
-export default function ProductCard(props: any) {
-    const { product } = props;
-    let attributeKeys: any;
-    if (product && product.attribute_info && product.attribute_info.length > 0) {
-        attributeKeys = Object.keys(product.attribute_info[0]);
+export const ProductCard: React.FC<ProductProps> = ({ product }) => {
+    let attributeKeys! : string[];
+    if (product && product.attribute_info ) {
+        if (product.attribute_info.length > 0 && product.attribute_info[0]){
+            attributeKeys = Object.keys(product.attribute_info[0]);
+        }
+        
     }
     const [isUpdatingCart, setIsUpdatingCart] = useState(false);
 
@@ -44,7 +50,7 @@ export default function ProductCard(props: any) {
         const user : User  = JSON.parse(item || '{}');
         const cartId = user.cartId
         const cartData : CartAddInfo = {
-            product_id:product.pid,
+            product_id:product.id,
             cart_id:cartId
 
         }
@@ -63,7 +69,7 @@ export default function ProductCard(props: any) {
 
     }
 
-    const { isLoading, error:cartError, data } = useQuery(REACT_QUERY_ADD_TO_CART, updateCart, {
+    const { isLoading, error:cartError } = useQuery(REACT_QUERY_ADD_TO_CART, updateCart, {
         enabled: isUpdatingCart,retry:1 // Only fetch data when isFetching is true
       });
 
@@ -71,17 +77,18 @@ export default function ProductCard(props: any) {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'row', margin: 'auto' }}>
 
-            {/* <ImageList sx={{ overflowY: 'visible' }}> */}
             <Card square sx={{ 'backgroundColor': 'white', marginTop: '0px', overflow: 'visible', margin: '1rem', borderRadius: '0.5rem', width: '10rem', padding: '0.1rem', boxShadow: '5', display: 'flex' }}>
 
 
-                <CardContent sx={{ color: 'black', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ color: 'black', display: 'flex', flexDirection: 'column',padding:'0.5rem'  }}>
 
-                    <Box sx={{ height: '7rem', display: 'flex' }}>
+                    <Box sx={{ height: '7rem', display: 'flex',width:'100%' }}>
                         {product && product.image_path && product.image_path.length > 0 ? <img src={BASE_URL + '/' + product.image_path[0]} style={{ 'objectFit': 'contain' }} width='100%' height='100%' alt={product && product.name} loading='lazy' /> : <img src={placeholder_product} />}
 
 
                     </Box>
+                    <Typography sx={{ textTransform: 'capitalize', marginTop: '0.5rem', fontSize: '0.75rem', color: 'gray', ...myriadProFont }}>{product && product.configuration}</Typography>
+
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '0.5rem', flex: '1' }}>
 
                         <Typography sx={{ textTransform: 'capitalize', marginTop: '0.1rem', fontSize: '0.75rem', ...myriadProFont, textWrap: 'nowrap' }}>{product && product.bname} {product && product.name}</Typography>
@@ -97,9 +104,10 @@ export default function ProductCard(props: any) {
 
                         )}
                         <Box display={'flex'} flex={1} flexDirection={'row'} justifyContent={'space-between'}>
+                        <Typography sx={{ textTransform: 'capitalize', fontSize: '0.8rem', ...myriadProFont }}>{product && `${product.mname}`}</Typography>
                             <Typography sx={{ textTransform: 'capitalize', fontSize: '0.8rem', ...myriadProFont }}>{product && `₹${product.price}`}</Typography>
                             <IconButton onClick={handleAddCartButtonClick}>
-                                <AddCircle sx={{ width: '2rem', height: '2.5rem' }} />
+                                <AddCircle sx={{ width: '2rem', height: '2rem' }} />
                             </IconButton>
 
                         </Box>
@@ -109,7 +117,6 @@ export default function ProductCard(props: any) {
 
                 {/*  */}
             </Card>
-            {/* </ImageList> */}
 
 
         </Box>

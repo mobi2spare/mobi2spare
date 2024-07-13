@@ -20,5 +20,6 @@ export const ADD_TO_CART = '/api/cart'
 export const GET_FROM_CART = '/api/cart'
 export const UPDATE_CART_QTY = '/api/cart'
 export const GET_REQUESTS = '/api/requests'
+export const DELETE_REQUESTS = '/api/requests'
 
 

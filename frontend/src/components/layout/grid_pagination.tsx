@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
 import { Product } from '../../constants/models';
-import ProductCard from '../common/product_card';
+import {ProductCard} from '../common/product_card';
 import CircularProgress from '@mui/material/CircularProgress';
 import api from '../../utils/network_requests';
 import { useInfiniteQuery } from 'react-query';
@@ -59,7 +59,7 @@ const { ref, inView } = useInView({threshold:0.5});
        <Grid container sx={style}>
         {data && flattenedData.map((product: Product,i) => (
           <Grid key={product && product.id} item md={4}>
-          <ProductCard  product={product} />
+          <ProductCard product={product} />
           </Grid>
         ))}
         

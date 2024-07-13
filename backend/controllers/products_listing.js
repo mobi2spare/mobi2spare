@@ -86,6 +86,13 @@ export const addProductForSeller = async (req, res) => {
 
 };
 
+export const deleteProductRequest = async(req, res)=>{
+
+    const productId = req.params['id'];
+
+    await db.none("DELETE FROM product_requests WHERE id=$1",[productId])
+}
+
 export const updateProductRequestWithImage = async (req, res) => {
 
     const productId = req.params['id'];
@@ -288,7 +295,8 @@ export const getAllProducts = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const query = `
-        SELECT products.price, products.id AS pid, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+        SELECT products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+        model.model_name as mname, ram_storage.configuration,
         COALESCE(
         json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
         FILTER (WHERE attribute_value.id IS NOT NULL AND attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
@@ -300,11 +308,13 @@ export const getAllProducts = async (req, res) => {
                 LEFT JOIN images ON images.id = pim.image_id
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
+                INNER JOIN model ON  products.model_id = model.id
+                INNER JOIN ram_storage ON ram_storage.id = model.id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.id = attribute_info.id
                 WHERE products.quantity > 0
-                GROUP BY products.id, categories.name, brands.name
+                GROUP BY products.id, categories.name, brands.name,model.model_name,ram_storage.configuration
                 ORDER BY products.id ASC
                 LIMIT $1    
                 OFFSET $2`;
@@ -354,7 +364,8 @@ export const getAllProductsForCategory = async (req, res) => {
 
         const offset = (page - 1) * limit;
         const query = `
-                    SELECT products.price, products.id AS pid, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+                    SELECT products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+                    model.model_name as mname, ram_storage.configuration,
                     COALESCE(
                     json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
                     FILTER (WHERE attribute_value.id IS NOT NULL AND attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
@@ -366,12 +377,14 @@ export const getAllProductsForCategory = async (req, res) => {
                 LEFT JOIN images ON images.id = pim.image_id
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
+                INNER JOIN model ON  products.model_id = model.id
+                INNER JOIN ram_storage ON ram_storage.id = model.id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
                 WHERE products.category_id = $1
                 AND products.quantity > 0
-                GROUP BY products.id, categories.name, brands.name
+                GROUP BY products.id, categories.name, brands.name,model.model_name,ram_storage.configuration
                 ORDER BY products.id ASC
                 LIMIT $2    
                 OFFSET $3`;

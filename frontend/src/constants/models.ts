@@ -14,21 +14,11 @@ export interface Product {
     description : string,
     mname? : string,
     configuration? : string
-    attribute_info : []
+    attribute_info : string[]
 }
 
-export interface CartProduct {
-    image_path : string[],
-    id : number,
-    name : string,
-    price : number,
-    cname : string,
-    bname : string,
-    description : string,
-    attribute_info : []
+export interface CartProduct extends Product{
     cartQuantity : number,
-    mname: string,
-    configuration: string
     quantity:number,
     isChecked?: boolean 
 }

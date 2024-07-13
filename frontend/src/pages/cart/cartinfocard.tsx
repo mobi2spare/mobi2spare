@@ -11,14 +11,19 @@ import { USER } from '../../constants/constants';
 import { User } from '../../contexts/auth/auth.context';
 import api from '../../utils/network_requests';
 import Checkbox from '@mui/material/Checkbox';
+import { CartProduct, Product } from '../../constants/models';
 
+interface CartInfoProps {
+  product:CartProduct,
+  onPriceChange : (price:number)=>void
+}
 
-export default function CartInfoCard(props: any) {
+export default function CartInfoCard(props: CartInfoProps) {
 
  
   // console.log(props);
   const { product,onPriceChange } = props;
-  const [quantity, setQuantity] = useState(product.cartquantity);
+  const [quantity, setQuantity] = useState(product.cartQuantity);
   const [totalPrice, setTotalPrice] = useState(product.price);
   const myriadProFont = {
     fontFamily: "MyriadProRegular,Arial,sans-serif",
@@ -31,7 +36,7 @@ export default function CartInfoCard(props: any) {
     const cartId = user.cartId
     const cartData = {
         cart_id:cartId,
-        product_id:product.pid,
+        product_id:product.id,
         quantity:quantity
       
     }
