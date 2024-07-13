@@ -32,7 +32,6 @@ const fontFamily = { fontFamily: 'SegoeUIBold' };
 export function UploadImageComponent(props: any) {
 
   const { title, previewImage, handleImageChange } = props;
-
   return ( // Remove the semicolon after return
     <Box display={'grid'} sx={{ placeItems: 'center', gridTemplateColumns: '1fr' }}>
       <Typography fontSize={'1.5rem'} fontFamily={fontFamily.fontFamily}>{title}</Typography>

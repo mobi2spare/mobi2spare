@@ -39,7 +39,6 @@ export default function Requests() {
         const userId = user.id
         const result = await api.get(`${BASE_URL}${GET_REQUESTS}/${userId}`);
         setRequestData(result.data.data)
-        // console.log(result.data.data);
     }
 
     const { isLoading, error: requestsError } = useQuery(REACT_QUERY_GET_REQUESTS, getAllRequests, {

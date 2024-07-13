@@ -14,7 +14,16 @@ export interface Product {
     description : string,
     mname? : string,
     configuration? : string
-    attribute_info : string[]
+    attribute_info : [AttributeInfo]
+    brand_id : number,
+    category_id : number,
+    model_id : number,
+    configuration_id : number
+}
+
+export interface AttributeInfo {
+    attribute_name:string,
+    attribute_value : string
 }
 
 export interface CartProduct extends Product{

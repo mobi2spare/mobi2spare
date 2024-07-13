@@ -38,7 +38,7 @@ export const getItemsFromCartForCartId = async (req, res) => {
     console.log(cart_id);
     const query = `
         SELECT products.quantity as quantity,cartitems.quantity as cartQuantity,products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
-        model.model_name as mname,ram_storage.configuration as configuration,
+        model.model_name as mname,model.id as model_id,ram_storage.id as  configuration_id,ram_storage.configuration as configuration,
         COALESCE(
         json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
         FILTER (WHERE attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
@@ -57,7 +57,7 @@ export const getItemsFromCartForCartId = async (req, res) => {
                 LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
                 LEFT JOIN cartitems ON cartitems.product_id = products.id
                 WHERE products.quantity > 0 AND cart_id=$1
-                GROUP BY products.id, categories.name, brands.name,cartitems.quantity,model.model_name,ram_storage.configuration`
+                GROUP BY products.id, categories.name, brands.name,cartitems.quantity,model.model_name,ram_storage.configuration,model.id,ram_storage.id`
     const values = [cart_id]; // Parameters for prepared statement
     const result = await db.manyOrNone(query, values);
     return res.status(StatusCodes.OK).json({

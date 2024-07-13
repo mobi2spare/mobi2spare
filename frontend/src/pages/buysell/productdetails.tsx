@@ -1,12 +1,10 @@
 
-import {  Box, CircularProgress, IconButton, Menu, Paper, TextField, Typography, useTheme } from '@mui/material'
-import React, { ChangeEvent, SyntheticEvent, useContext, useEffect, useMemo, useState } from 'react'
-import { Attributes, Brand, Category, Model, Product, RamStorageConfig } from '../../constants/models';
+import {  Box, CircularProgress, TextField, Typography, useTheme } from '@mui/material'
+import React, { ChangeEvent, SyntheticEvent, useEffect, useMemo, useState } from 'react'
+import { AttributeInfo, Attributes, Brand, Category, Model, Product, RamStorageConfig } from '../../constants/models';
 import api from '../../utils/network_requests';
 import { BASE_URL,GET_MODELS } from '../../utils/api';
 import StyledDropDown from '../../components/dropdown/styleddropdown';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
 import { orange } from '@mui/material/colors';
 import { StyledButton } from '../../components/buttons/styled_buttons';
 import { toast } from "react-toastify";
@@ -14,7 +12,7 @@ import { getUser } from '../../utils/utils';
 import { ProductInputType, ProductOutputType, useProductMutation, useSaveImageMutation, useSaveImagePathMutation } from '../../helper/products/use-product';
 import { useQuery } from 'react-query';
 import { UploadImageComponent } from './upload_image';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { REACT_QUERY_ATTRIBUTES, REACT_QUERY_BRANDS, REACT_QUERY_CATEGORIES, REACT_QUERY_MODELS, REACT_QUERY_PHONE_CONFIG } from '../../constants/react-query-constants';
 import { getApiForProductRequestUpload } from './buysellfactory';
 import CustomControlledAutoComplete from '../../components/dropdown/custom_autocomplete';
@@ -23,28 +21,29 @@ import { fetchAttributesByCategories, fetchBrands, fetchCategories, fetchRamStor
 import { useDispatch } from 'react-redux';
 import { setTitle } from '../../store/actions';
 import AddRemoveQuantityButtons from '../../components/buttons/add_remove_buttons';
+import { useLocation } from 'react-router-dom';
 
-interface ProductDetailsProps {
-    productToSell?:Product
-}
-export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell }) => {
 
+export const ProductDetails = () => {
+    const location = useLocation();
+    const productToSell = location.state?.productToSell as Product;
+    console.log(productToSell);
     const fontFamily = { fontFamily: 'SegoeUIBold' };
     const ralewayBoldFont = { fontFamily: 'RalewayBold', fontSize: '1.2rem' }
-    const pageTitle: string =  MENU_LABELS.SELL_PARTS;
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [selectedBrand, setSelectedBrand] = useState("");
+    const pageTitle =  MENU_LABELS.SELL_PARTS;
+    const [selectedCategory, setSelectedCategory] = useState(productToSell?.cname || "");
+    const [selectedBrand, setSelectedBrand] = useState(productToSell?.bname || "");
     const [selectedRamStorageConfigItem, setselectedRamStorageConfigItem] = useState("");
-    const [selectedRamStorageConfigItemid, setselectedRamStorageConfigItemId] = useState(-1);
+    const [selectedRamStorageConfigItemid, setselectedRamStorageConfigItemId] = useState(productToSell?.configuration_id || -1);
     const [filteredRamConfigs, setFilteredRamConfigs] = useState<RamStorageConfig[]>([]);
     const [selectedModel, setselectedModel] = useState("");
     const [selectedCustomModel, setselectedCustomModel] = useState("");
     const [selectedCustomRamStorageConfig, setselectedCustomRamStorageConfig] = useState("");
     const [selectedAttributes, setSelectedAttributes] = useState(new Map());
     const [attributesMap, setAttributesMap] = useState(new Map());
-    const [selectedCategoryId, setselectedCategoryId] = useState(-1);
-    const [selectedBrandId, setselectedBrandId] = useState(-1);
-    const [selectedModelId, setselectedModelId] = useState(-1);
+    const [selectedCategoryId, setselectedCategoryId] = useState(productToSell?.category_id || -1);
+    const [selectedBrandId, setselectedBrandId] = useState(productToSell?.brand_id || -1);
+    const [selectedModelId, setselectedModelId] = useState(productToSell?.model_id || -1);
     const [firstSelectedImage, setFirstSelectedImage] = useState<File>();
     const [secondSelectedImage, setSecondSelectedImage] = useState<File>();
     const [previewFirstImage, setPreviewFirstImage] = useState<string>();
@@ -249,7 +248,6 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
                 setselectedRamStorageConfigItem(changedRamStorageConfig.name);
                 setselectedCustomRamStorageConfig("");
                 filteredRamConfigs.forEach((ramStorage: RamStorageConfig, _: number) => {
-                    console.log(ramStorage.name, changedRamStorageConfig.name);
                     if (ramStorage.name === changedRamStorageConfig.name) {
                         setselectedRamStorageConfigItemId(ramStorage.id);
                     }
@@ -314,6 +312,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
     }
 
     const handleModelChange = (_: SyntheticEvent<Element, Event>, changedModel: unknown) => {
+        console.log(changedModel);
         if (isModel(changedModel)) {
 
             setselectedModel(changedModel.name);
@@ -388,14 +387,16 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
         }
     }
     
-
-    const { isLoading: categoryLoading, error: errorCategories, data: categoriesData } = useQuery(REACT_QUERY_CATEGORIES, fetchCategories);
-    const { isLoading: brandLoading, error: errorBrands, data: brandsData } = useQuery(REACT_QUERY_BRANDS, fetchBrands);
-    const { isLoading: attributesLoading, error: errorAttributes, data: attributesData } = useQuery(REACT_QUERY_ATTRIBUTES, fetchAttributesByCategories);
+    // staleTime: Infinity  is used to fetch data only once
+    const { isLoading: categoryLoading, error: errorCategories, data: categoriesData } = useQuery(REACT_QUERY_CATEGORIES, fetchCategories,{
+        staleTime: Infinity 
+    });
+    const { isLoading: brandLoading, error: errorBrands, data: brandsData } = useQuery(REACT_QUERY_BRANDS, fetchBrands,{staleTime: Infinity});
+    const { isLoading: attributesLoading, error: errorAttributes, data: attributesData } = useQuery(REACT_QUERY_ATTRIBUTES, fetchAttributesByCategories,{staleTime: Infinity});
     const { isLoading: modelsLoading, error: errorModels, data: modelsData } = useQuery([REACT_QUERY_MODELS, selectedBrandId], getModelsByBrands, { enabled: selectedBrandId !== -1 });
     const { isLoading: ramConfigLoading, error: errorRamStorageConfig, data: configurationData } = useQuery(REACT_QUERY_PHONE_CONFIG, fetchRamStorageConfig,{ enabled: selectedBrandId !== -1 });
 
-    const cachedConfigurationData = useMemo(() => configurationData || [], [configurationData]); // Cache configurationData because wont change frequently
+    const cachedConfigurationData = useMemo(() => configurationData || [], [configurationData]); // Cache configurationData because wont change frequently    
 
     useEffect(() => {
         if (cachedConfigurationData) {
@@ -409,7 +410,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
                 let filteredRamItems: RamStorageConfig[] = [];
 
                 // selected model.ramstorage config contains ramStorageConfig.name
-                modelsData.forEach((model: Model, _: number) => {
+                modelsData && modelsData.forEach((model: Model, _: number) => {
                     cachedConfigurationData.forEach((ramStorageConfig: RamStorageConfig, _: number) => {
                         if (model.configuration.includes(ramStorageConfig.name) && selectedModelId === model.id) {
 
@@ -443,6 +444,14 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
 
         });
         setAttributesMap(categoryAttributeMap);
+        let tempIdMap = new Map();
+        
+        productToSell?.attribute_info.forEach((attribute:AttributeInfo)=>{
+            tempIdMap.set(attribute.attribute_name,attribute.attribute_value);
+        })
+        console.log(tempIdMap);
+        setSelectedAttributes(tempIdMap);
+
     }, [attributesData, selectedCategoryId]);
 
 
@@ -474,7 +483,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
 
                         {modelsData && modelsData.length > 0 ? (
 
-                            <CustomControlledAutoComplete freeSolo={true} control={control} handleValueChange={handleModelChange} itemData={modelsData} isLoading={modelsLoading}
+                            <CustomControlledAutoComplete freeSolo={true} control={control} handleValueChange={handleModelChange} itemData={modelsData} isLoading={modelsLoading} defaultValue={productToSell?.mname}
                                 onCustomInputChange={onCustomModelChange} component_name={'model-name'} required_text={"Select a model"} title="Search models">
                                 
                             </CustomControlledAutoComplete>
@@ -485,7 +494,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ productToSell })
 
                         {filteredRamConfigs && filteredRamConfigs.length > 0 ? (
 
-                        <CustomControlledAutoComplete freeSolo={true} control={control} handleValueChange={handleRamStorageChange} itemData={filteredRamConfigs} isLoading={ramConfigLoading}
+                        <CustomControlledAutoComplete defaultValue={productToSell?.configuration} freeSolo={true} control={control} handleValueChange={handleRamStorageChange} itemData={filteredRamConfigs} isLoading={ramConfigLoading}
                             onCustomInputChange={onCustomRamStorageChange} component_name={'ram-storage-name'} required_text={"Select ram/storage"} title="Search ram/storage">
 
                         </CustomControlledAutoComplete>

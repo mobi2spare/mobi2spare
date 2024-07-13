@@ -6,9 +6,11 @@ export const fetchRequestedFeedForUser = async (req, res) => {
 
     const myRequestsQuery = `
         SELECT product_requests.id,product_requests.buyer_id,categories.name AS cname, brands.name AS bname,
+        product_requests.brand_id, product_requests.category_id,
         model.model_name as mname,ram_storage.configuration as configuration,
+        model.id as model_id,ram_storage.id as  configuration_id,
         COALESCE(
-        json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
+        json_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
         FILTER (WHERE attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
         '[]'
             ) AS attribute_info,
@@ -20,17 +22,19 @@ export const fetchRequestedFeedForUser = async (req, res) => {
                 INNER JOIN brands ON product_requests.brand_id = brands.id
                 INNER JOIN model on model.id = product_requests.model_id
                 INNER JOIN ram_storage ON ram_storage.id = product_requests.ram_storage_id
-                LEFT JOIN product_request_attributes ON product_requests.id = product_request_attributes.product_request_id
-                LEFT JOIN attribute_value ON product_request_attributes.attribute_value_id = attribute_value.id
-                LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
+                INNER JOIN product_request_attributes ON product_requests.id = product_request_attributes.product_request_id
+                INNER JOIN attribute_value ON product_request_attributes.attribute_value_id = attribute_value.id
+                INNER JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
                 LEFT JOIN cartitems ON cartitems.product_id = product_requests.id
                 WHERE product_requests.buyer_id=$1
-                GROUP BY product_requests.id, categories.name, brands.name,model.model_name,ram_storage.configuration,product_requests.buyer_id`
+                GROUP BY product_requests.id, categories.name, brands.name,model.model_name,ram_storage.configuration,product_requests.buyer_id,model.id,ram_storage.id`
     const otherUserRequestsQuery = `
                 SELECT product_requests.id, categories.name AS cname, brands.name AS bname,
                 model.model_name as mname,ram_storage.configuration as configuration,
+                product_requests.brand_id, product_requests.category_id,
+                model.id as model_id,ram_storage.id as  configuration_id,
                 COALESCE(
-                json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
+                json_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
                 FILTER (WHERE attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
                 '[]'
                     ) AS attribute_info,
@@ -42,12 +46,12 @@ export const fetchRequestedFeedForUser = async (req, res) => {
                         INNER JOIN brands ON product_requests.brand_id = brands.id
                         INNER JOIN model on model.id = product_requests.model_id
                         INNER JOIN ram_storage ON ram_storage.id = product_requests.ram_storage_id
-                        LEFT JOIN product_request_attributes ON product_requests.id = product_request_attributes.product_request_id
-                        LEFT JOIN attribute_value ON product_request_attributes.attribute_value_id = attribute_value.id
-                        LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
+                        INNER JOIN product_request_attributes ON product_requests.id = product_request_attributes.product_request_id
+                        INNER JOIN attribute_value ON product_request_attributes.attribute_value_id = attribute_value.id
+                        INNER JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
                         LEFT JOIN cartitems ON cartitems.product_id = product_requests.id
                         WHERE product_requests.buyer_id!=$1
-                        GROUP BY product_requests.id, categories.name, brands.name,model.model_name,ram_storage.configuration`
+                        GROUP BY product_requests.id, categories.name, brands.name,model.model_name,ram_storage.configuration,model.id,ram_storage.id`
 
     const values = [userId]; // Parameters for prepared statement
     const myRequestsResult = await db.manyOrNone(myRequestsQuery, values);
@@ -63,14 +67,14 @@ export const fetchRequestedFeedForUser = async (req, res) => {
 
 }
 
-export const deleteRequestForUser = async (req,res)=>{
+export const deleteRequestForUser = async (req, res) => {
 
     let userId = req.params['userId'];
     const deleteUserIdQuery = 'DELETE FROM product_requests WHERE product_requests.buyer_id=$1'
-    const values = [userId]; 
+    const values = [userId];
     await db.none(deleteUserIdQuery, values);
     return res.status(StatusCodes.OK).json({
         success: true,
-        message:'Request deleted successfully'
+        message: 'Request deleted successfully'
     })
 }

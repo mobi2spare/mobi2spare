@@ -9,7 +9,7 @@ import api from '../../utils/network_requests';
 import { toast } from 'react-toastify';
 import { User } from '../../contexts/auth/auth.context';
 import { USER } from '../../constants/constants';
-import { Product } from '../../constants/models';
+import { AttributeInfo, Product } from '../../constants/models';
 
 interface CartAddInfo  {
     product_id : number,
@@ -21,13 +21,7 @@ interface ProductProps {
 }
 
 export const ProductCard: React.FC<ProductProps> = ({ product }) => {
-    let attributeKeys! : string[];
-    if (product && product.attribute_info ) {
-        if (product.attribute_info.length > 0 && product.attribute_info[0]){
-            attributeKeys = Object.keys(product.attribute_info[0]);
-        }
-        
-    }
+    console.log(product.attribute_info);
     const [isUpdatingCart, setIsUpdatingCart] = useState(false);
 
 
@@ -93,12 +87,11 @@ export const ProductCard: React.FC<ProductProps> = ({ product }) => {
 
                         <Typography sx={{ textTransform: 'capitalize', marginTop: '0.1rem', fontSize: '0.75rem', ...myriadProFont, textWrap: 'nowrap' }}>{product && product.bname} {product && product.name}</Typography>
                         <Typography sx={{ textTransform: 'capitalize', marginTop: '0.5rem', fontSize: '0.60rem', color: 'gray', ...myriadProFont }}>{product && product.cname}</Typography>
-                        {attributeKeys && attributeKeys.map((key: any) =>
+                        {product.attribute_info.map((attributeItem: AttributeInfo) =>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-                                <Typography sx={{ textTransform: 'capitalize', fontSize: '0.6rem', ...myriadProFont }}>{key}</Typography>
+                                <Typography sx={{ textTransform: 'capitalize', fontSize: '0.6rem', ...myriadProFont }}>{attributeItem.attribute_name}</Typography>
                                 <Typography> : </Typography>
-                                <Typography sx={{ textTransform: 'capitalize', fontSize: '0.6rem', ...myriadProFont }}>{product && product.attribute_info[0][key]}</Typography>
+                                <Typography sx={{ textTransform: 'capitalize', fontSize: '0.6rem', ...myriadProFont }}>{attributeItem.attribute_value}</Typography>
 
                             </Box>
 

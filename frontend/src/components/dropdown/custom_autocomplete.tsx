@@ -4,8 +4,7 @@ import { Controller } from 'react-hook-form';
 import InfoIcon from '@mui/icons-material/Info';
 export default function CustomControlledAutoComplete(props: any) {
 
-    const { control, handleValueChange, itemData, onCustomInputChange, isLoading, component_name, required_text, title, freeSolo } = props
-
+    const { control, handleValueChange, itemData, onCustomInputChange, isLoading, component_name, required_text, title, freeSolo,defaultValue } = props
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handlePopoverOpen = (event: any) => {
@@ -38,12 +37,12 @@ export default function CustomControlledAutoComplete(props: any) {
                             }
                         }
                             value={
-                                field.value || `${required_text}`
+                                defaultValue || field.value || `${required_text}`
                             }
                             options={
                                 itemData
                             }
-                            
+
                             onInputChange={(event, newValue) => {
                                 onCustomInputChange(event, newValue);
                                 if (event && event.type === 'change') {
@@ -52,9 +51,9 @@ export default function CustomControlledAutoComplete(props: any) {
                             }}
                             getOptionLabel={(option: any) => typeof option === 'string' ? option : option.name}
                             getOptionKey={(options: any) => options.id}
-                            isOptionEqualToValue={(option:any,value:any)=>{
-                                return JSON.stringify(option)===JSON.stringify(value)
-                                
+                            isOptionEqualToValue={(option: any, value: any) => {
+                                return JSON.stringify(option) === JSON.stringify(value)
+
                             }}
                             renderInput={(params) => {
 
