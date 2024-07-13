@@ -5,7 +5,7 @@ export const fetchRequestedFeedForUser = async (req, res) => {
     let userId = req.params['userId'];
 
     const myRequestsQuery = `
-        SELECT product_requests.id,categories.name AS cname, brands.name AS bname,
+        SELECT product_requests.id,product_requests.buyer_id,categories.name AS cname, brands.name AS bname,
         model.model_name as mname,ram_storage.configuration as configuration,
         COALESCE(
         json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
@@ -25,7 +25,7 @@ export const fetchRequestedFeedForUser = async (req, res) => {
                 LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
                 LEFT JOIN cartitems ON cartitems.product_id = product_requests.id
                 WHERE product_requests.buyer_id=$1
-                GROUP BY product_requests.id, categories.name, brands.name,model.model_name,ram_storage.configuration`
+                GROUP BY product_requests.id, categories.name, brands.name,model.model_name,ram_storage.configuration,product_requests.buyer_id`
     const otherUserRequestsQuery = `
                 SELECT product_requests.id, categories.name AS cname, brands.name AS bname,
                 model.model_name as mname,ram_storage.configuration as configuration,
@@ -61,4 +61,16 @@ export const fetchRequestedFeedForUser = async (req, res) => {
     })
 
 
+}
+
+export const deleteRequestForUser = async (req,res)=>{
+
+    let userId = req.params['userId'];
+    const deleteUserIdQuery = 'DELETE FROM product_requests WHERE product_requests.buyer_id=$1'
+    const values = [userId]; // Parameters for prepared statement
+    await db.none(deleteUserIdQuery, values);
+    return res.status(StatusCodes.OK).json({
+        success: true,
+        message:'Request deleted successfully'
+    })
 }
