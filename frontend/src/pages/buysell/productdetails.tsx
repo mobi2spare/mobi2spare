@@ -27,14 +27,13 @@ import { useLocation } from 'react-router-dom';
 export const ProductDetails = () => {
     const location = useLocation();
     const productToSell = location.state?.productToSell as Product;
-    console.log(productToSell);
     const fontFamily = { fontFamily: 'SegoeUIBold' };
     const ralewayBoldFont = { fontFamily: 'RalewayBold', fontSize: '1.2rem' }
     const pageTitle =  MENU_LABELS.SELL_PARTS;
     const [selectedCategory, setSelectedCategory] = useState(productToSell?.cname || "");
     const [selectedBrand, setSelectedBrand] = useState(productToSell?.bname || "");
     const [selectedRamStorageConfigItem, setselectedRamStorageConfigItem] = useState("");
-    const [selectedRamStorageConfigItemid, setselectedRamStorageConfigItemId] = useState(productToSell?.configuration_id || -1);
+    const [selectedRamStorageConfigItemid, setselectedRamStorageConfigItemId] = useState(-1);
     const [filteredRamConfigs, setFilteredRamConfigs] = useState<RamStorageConfig[]>([]);
     const [selectedModel, setselectedModel] = useState("");
     const [selectedCustomModel, setselectedCustomModel] = useState("");
@@ -43,11 +42,13 @@ export const ProductDetails = () => {
     const [attributesMap, setAttributesMap] = useState(new Map());
     const [selectedCategoryId, setselectedCategoryId] = useState(productToSell?.category_id || -1);
     const [selectedBrandId, setselectedBrandId] = useState(productToSell?.brand_id || -1);
-    const [selectedModelId, setselectedModelId] = useState(productToSell?.model_id || -1);
+    const [selectedModelId, setselectedModelId] = useState(-1);
     const [firstSelectedImage, setFirstSelectedImage] = useState<File>();
     const [secondSelectedImage, setSecondSelectedImage] = useState<File>();
     const [previewFirstImage, setPreviewFirstImage] = useState<string>();
     const [previewSecondImage, setPreviewSecondImage] = useState<string>();
+    const [existingModelsSet, setExistingModels] = useState(false);
+    const [existingRamStorageConfigSet, setExistingRamStorageConfig] = useState(false);
    
     const [quantity, setQuantity] = useState(1);
     
@@ -72,6 +73,7 @@ export const ProductDetails = () => {
         setError,
         control,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<ProductInputType>();
 
@@ -82,6 +84,8 @@ export const ProductDetails = () => {
       dispatch(setTitle(pageTitle))
     
     }, [])
+
+  
     
 
     async function onSubmit({ price, description }: ProductInputType) {
@@ -94,7 +98,7 @@ export const ProductDetails = () => {
             }
 
             let attribute_value_ids: number[] = [];
-            selectedAttributes.forEach((value, idx) => {
+            selectedAttributes.forEach((value, _) => {
                 attribute_value_ids.push(parseInt(value[0]));
 
             })
@@ -312,9 +316,8 @@ export const ProductDetails = () => {
     }
 
     const handleModelChange = (_: SyntheticEvent<Element, Event>, changedModel: unknown) => {
-        console.log(changedModel);
         if (isModel(changedModel)) {
-
+            
             setselectedModel(changedModel.name);
             setselectedRamStorageConfigItem("");
             setselectedRamStorageConfigItemId(-1);
@@ -393,8 +396,24 @@ export const ProductDetails = () => {
     });
     const { isLoading: brandLoading, error: errorBrands, data: brandsData } = useQuery(REACT_QUERY_BRANDS, fetchBrands,{staleTime: Infinity});
     const { isLoading: attributesLoading, error: errorAttributes, data: attributesData } = useQuery(REACT_QUERY_ATTRIBUTES, fetchAttributesByCategories,{staleTime: Infinity});
-    const { isLoading: modelsLoading, error: errorModels, data: modelsData } = useQuery([REACT_QUERY_MODELS, selectedBrandId], getModelsByBrands, { enabled: selectedBrandId !== -1 });
-    const { isLoading: ramConfigLoading, error: errorRamStorageConfig, data: configurationData } = useQuery(REACT_QUERY_PHONE_CONFIG, fetchRamStorageConfig,{ enabled: selectedBrandId !== -1 });
+    const { isLoading: modelsLoading, error: errorModels, data: modelsData } = useQuery([REACT_QUERY_MODELS, selectedBrandId], getModelsByBrands, { enabled: selectedBrandId !== -1,onSuccess(data) {
+        if (productToSell && !existingModelsSet){
+            setValue('model_name',productToSell.mname as string)
+            setselectedModel(productToSell.mname as string)
+            setselectedModelId(productToSell.model_id)
+            setExistingModels(true);
+        }
+    }, });
+    const { isLoading: ramConfigLoading, error: errorRamStorageConfig, data: configurationData } = useQuery(REACT_QUERY_PHONE_CONFIG, fetchRamStorageConfig,{ enabled: selectedBrandId !== -1,onSuccess(data) {
+        if (productToSell && !existingRamStorageConfigSet){
+            setValue('ram_storage_config',productToSell.configuration as string)
+            setselectedRamStorageConfigItem(productToSell.configuration as string) 
+            setselectedRamStorageConfigItemId(productToSell.configuration_id)
+            setExistingRamStorageConfig(true);
+            setFilteredRamConfigs(data);
+        }
+        
+    }, });
 
     const cachedConfigurationData = useMemo(() => configurationData || [], [configurationData]); // Cache configurationData because wont change frequently    
 
@@ -434,9 +453,9 @@ export const ProductDetails = () => {
     useEffect(() => {
         const categoryAttributeMap = new Map();
         attributesData && attributesData.map((attribute: Attributes, _: number) => {
-            const categoryid = attribute['categoryid'];
-            const attributeName = attribute['name'];
-            const values = attribute['category_attribute_values'];
+            const categoryid = attribute.categoryid;
+            const attributeName = attribute.name;
+            const values = attribute.category_attribute_values;
             if (categoryid === selectedCategoryId || selectedCategoryId === -1) {
                 categoryAttributeMap.set(attributeName, values);
             }
@@ -447,10 +466,12 @@ export const ProductDetails = () => {
         let tempIdMap = new Map();
         
         productToSell?.attribute_info.forEach((attribute:AttributeInfo)=>{
-            tempIdMap.set(attribute.attribute_name,attribute.attribute_value);
+            tempIdMap.set(attribute.attribute_name,[attribute.attribute_value_id, attribute.attribute_value] || []);
+            
         })
         console.log(tempIdMap);
         setSelectedAttributes(tempIdMap);
+        console.log(selectedAttributes);
 
     }, [attributesData, selectedCategoryId]);
 
@@ -458,10 +479,9 @@ export const ProductDetails = () => {
     return (
         <Box sx={{ marginTop: '2rem' }} >
 
-            {/* <Typography textAlign={'center'} variant='h1' color={theme.palette.text.primary} sx={{ ...ralewayBoldFont }}>{title}</Typography> */}
             <Box display={'flex'} flexDirection={'column'}>
                 <Typography fontSize={'1.75rem'} fontFamily={fontFamily.fontFamily} margin={'1rem'}>Upload Photos</Typography>
-                <Box display={'flex'} marginTop={'1rem'} flexDirection={'row'} height={'15rem'}>
+                <Box display={'flex'} marginTop={'1rem'} flexDirection={'row'} height={'15rem'} justifyContent={'center'} alignItems={'center'}>
 
                     <UploadImageComponent previewImage={previewFirstImage} handleImageChange={handleFirstImageChange} title='Front' />
 
@@ -484,7 +504,7 @@ export const ProductDetails = () => {
                         {modelsData && modelsData.length > 0 ? (
 
                             <CustomControlledAutoComplete freeSolo={true} control={control} handleValueChange={handleModelChange} itemData={modelsData} isLoading={modelsLoading} defaultValue={productToSell?.mname}
-                                onCustomInputChange={onCustomModelChange} component_name={'model-name'} required_text={"Select a model"} title="Search models">
+                                onCustomInputChange={onCustomModelChange} component_name={'model_name'} required_text={"Select a model"} title="Search models">
                                 
                             </CustomControlledAutoComplete>
                             
@@ -495,7 +515,7 @@ export const ProductDetails = () => {
                         {filteredRamConfigs && filteredRamConfigs.length > 0 ? (
 
                         <CustomControlledAutoComplete defaultValue={productToSell?.configuration} freeSolo={true} control={control} handleValueChange={handleRamStorageChange} itemData={filteredRamConfigs} isLoading={ramConfigLoading}
-                            onCustomInputChange={onCustomRamStorageChange} component_name={'ram-storage-name'} required_text={"Select ram/storage"} title="Search ram/storage">
+                            onCustomInputChange={onCustomRamStorageChange} component_name={'ram_storage_config'} required_text={"Select ram/storage"} title="Search ram/storage">
 
                         </CustomControlledAutoComplete>
 
@@ -511,8 +531,9 @@ export const ProductDetails = () => {
                                 items={attributesMap.get(attribute)} // Access the value (attributes array)
                                 title={attribute} // Access the key (attribute name)
                                 onChange={handleAttributeChange}
-                                itemValue={selectedAttributes.get(attribute) && selectedAttributes.get(attribute)[1] || ""} // Assuming itemValue is an empty string here
+                                itemValue={selectedAttributes.get(attribute) && selectedAttributes.get(attribute)[1]|| ""} // Assuming itemValue is an empty string here
                             />
+                            
 
                             </Box>
 

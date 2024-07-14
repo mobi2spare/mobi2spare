@@ -21,7 +21,6 @@ interface ProductProps {
 }
 
 export const ProductCard: React.FC<ProductProps> = ({ product }) => {
-    console.log(product.attribute_info);
     const [isUpdatingCart, setIsUpdatingCart] = useState(false);
 
 

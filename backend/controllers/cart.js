@@ -37,7 +37,7 @@ export const getItemsFromCartForCartId = async (req, res) => {
     const cart_id = req.params['id'];
     console.log(cart_id);
     const query = `
-        SELECT products.quantity as quantity,cartitems.quantity as cartQuantity,products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+        SELECT products.quantity as quantity,cartitems.quantity as cart_quantity,products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
         model.model_name as mname,model.id as model_id,ram_storage.id as  configuration_id,ram_storage.configuration as configuration,
         COALESCE(
         json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))

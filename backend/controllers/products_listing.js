@@ -298,18 +298,19 @@ export const getAllProducts = async (req, res) => {
         SELECT products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
         model.model_name as mname, ram_storage.configuration,
         COALESCE(
-        json_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
+        jsonb_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
         FILTER (WHERE attribute_value.id IS NOT NULL AND attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
         '[]'
             ) AS attribute_info,
-                        COALESCE(json_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
+                        COALESCE(jsonb_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
                 FROM products
                 LEFT JOIN product_image_mapping pim ON products.id = pim.product_id
                 LEFT JOIN images ON images.id = pim.image_id
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
                 INNER JOIN model ON  products.model_id = model.id
-                INNER JOIN ram_storage ON ram_storage.id = model.id
+                INNER JOIN model_ram_storage_mapping ON model_ram_storage_mapping.model_id = model.id
+				LEFT JOIN ram_storage ON ram_storage.id = model_ram_storage_mapping.ram_storage_id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.id = attribute_info.id
@@ -357,7 +358,8 @@ export const getAllProductsForCategory = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     try {
-
+        console.log(page);
+        console.log(limit);
         const totalProductsQuery = 'SELECT COUNT(*) AS total FROM products WHERE category_id = $1';
         const totalResult = await db.any(totalProductsQuery, [id]);
         const total = totalResult[0].total; // Assuming a single row result
@@ -367,18 +369,19 @@ export const getAllProductsForCategory = async (req, res) => {
                     SELECT products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
                     model.model_name as mname, ram_storage.configuration,
                     COALESCE(
-                    json_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
+                    jsonb_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
                     FILTER (WHERE attribute_value.id IS NOT NULL AND attribute_info.attribute_name IS NOT NULL),  -- Filter nulls before building object
                 '[]'
                         ) AS attribute_info,
-                        COALESCE(json_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
+                        COALESCE(jsonb_agg(images.image_path) FILTER (WHERE images.image_path IS NOT NULL), '[]') AS image_path
                 FROM products
                 LEFT JOIN product_image_mapping pim ON products.id = pim.product_id
                 LEFT JOIN images ON images.id = pim.image_id
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
                 INNER JOIN model ON  products.model_id = model.id
-                INNER JOIN ram_storage ON ram_storage.id = model.id
+                INNER JOIN model_ram_storage_mapping ON model_ram_storage_mapping.model_id = model.id
+				LEFT JOIN ram_storage ON ram_storage.id = model_ram_storage_mapping.ram_storage_id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id

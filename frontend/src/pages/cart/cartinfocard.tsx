@@ -23,7 +23,7 @@ export default function CartInfoCard(props: CartInfoProps) {
  
   // console.log(props);
   const { product,onPriceChange } = props;
-  const [quantity, setQuantity] = useState(product.cartQuantity);
+  const [quantity, setQuantity] = useState(product.cart_quantity);
   const [totalPrice, setTotalPrice] = useState(product.price);
   const myriadProFont = {
     fontFamily: "MyriadProRegular,Arial,sans-serif",
@@ -48,10 +48,10 @@ export default function CartInfoCard(props: CartInfoProps) {
   const onCartItemSelectionChange = (event: React.ChangeEvent<HTMLInputElement>)=>{
     product.isChecked = event.target.checked;
     if (product.isChecked){
-      onPriceChange(product.price);
+      onPriceChange(product.price*product.cart_quantity);
     }
     else{
-      onPriceChange(-product.price);
+      onPriceChange(-product.price*product.cart_quantity);
     }
     
   }
