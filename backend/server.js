@@ -42,7 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 import cors from "cors";
 
-app.use(cors({origin: ['http://localhost:8801','http://192.168.29.105:8801']}));
+app.use(cors({origin: ['http://localhost:8801','http://192.168.29.105:8801','http://localhost:3000','http://localhost:3001']}));
 app.use(json());
 app.use("/api",authRouter);
 app.use("/api/category",categoryRouter);

@@ -56,6 +56,7 @@ export const fetchRequestedFeedForUser = async (req, res) => {
     const values = [userId]; // Parameters for prepared statement
     const myRequestsResult = await db.manyOrNone(myRequestsQuery, values);
     const otherRequestsResult = await db.manyOrNone(otherUserRequestsQuery, values);
+    console.log(myRequestsResult)
     return res.status(StatusCodes.OK).json({
         success: true,
         data: {

@@ -1,0 +1,36 @@
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #e9ecef;
+    overflow-y: auto;
+  }
+  
+  .sidebar-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-item {
+    cursor: pointer;
+    color: #000000;
+    padding: 15px 20px;
+    transition: background-color 0.3s;
+    position: relative;
+  }
+  
+  .sidebar-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .sidebar-item:before {
+    content: '\2022';
+    color: red;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    position: absolute;
+    left: 10px;
+  }
+  

@@ -1,0 +1,91 @@
+.request-management {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.search-bar button:hover {
+  background-color: #0056b3;
+}
+
+.requests-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.requests {
+  border: 1px solid #e9ecef;
+  padding: 20px;
+  width: 100%;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.requests h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #333;
+}
+
+.requests table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.requests th, .requests td {
+  border: 1px solid #e9ecef;
+  padding: 10px;
+  text-align: left;
+}
+
+.requests th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.requests tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+  .requests-container {
+    width: 100%;
+  }
+
+  .requests {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
