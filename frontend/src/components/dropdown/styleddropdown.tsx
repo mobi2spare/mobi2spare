@@ -8,7 +8,7 @@ export default function StyledDropDown(props: any) {
 
 
   const { title, items, onChange, itemValue, register, error, required, field_name } = props;
-  // console.log(itemValue,items)
+  
   return (
     <Box>
       <FormControl variant='outlined' fullWidth sx={{ marginBottom: '1rem' }}>

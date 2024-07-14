@@ -4,7 +4,7 @@ import { Controller } from 'react-hook-form';
 import InfoIcon from '@mui/icons-material/Info';
 export default function CustomControlledAutoComplete(props: any) {
 
-    const { control, handleValueChange, itemData, onCustomInputChange, isLoading, component_name, required_text, title, freeSolo,defaultValue } = props
+    const { control,handleValueChange, itemData, onCustomInputChange, isLoading, component_name, required_text, title, freeSolo,defaultValue } = props
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handlePopoverOpen = (event: any) => {
