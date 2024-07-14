@@ -42,7 +42,7 @@ export default function ShoppingCart() {
     setCartData(result.data.data);
     let totalPrice = 0;
     result.data.data.forEach((cartItem: CartProduct) => {
-      totalPrice += cartItem.price;
+      totalPrice += (cartItem.price*cartItem.cart_quantity);
       cartItem.isChecked = true;
     });
     setSelectedItemTotalPrice(totalPrice);

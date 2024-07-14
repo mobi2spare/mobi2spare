@@ -28,7 +28,7 @@ export interface AttributeInfo {
 }
 
 export interface CartProduct extends Product{
-    cartQuantity : number,
+    cart_quantity : number,
     quantity:number,
     isChecked?: boolean 
 }
