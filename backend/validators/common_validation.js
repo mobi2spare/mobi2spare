@@ -4,8 +4,7 @@ import { validationResult } from "express-validator";
 import dotenv from 'dotenv';
 dotenv.config();
 
-const defaultSecret = 'e6a7b892fecc467a9a2b573d7e649f82cbb0dcd34d8e4549cf89a2d5af79d239';
-const secret = process.env.JWT_SECRET || defaultSecret;
+const secret = process.env.JWT_SECRET ;
 
 export function verifyAndGetUserRoles(req, res, next) {
     const authHeader = req.headers.authorization;

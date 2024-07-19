@@ -1,6 +1,6 @@
 import express from "express";
 export const categoryRouter = express.Router();
-import {addCategory,getAllCategories,updateCategory,deleteCategory, updateCategoryWithImage, uploadCategoryImage,getInfoForCategory } from "../controllers/category.js";
+import {addCategory,getAllCategories,updateCategory,deleteCategory, uploadCategoryImage,getInfoForCategory,deleteCategoryImage,updateCategoryImage } from "../controllers/category.js";
 import { upload } from "../constants/constants.js";
 // const { auth, isRequestValidated } = require("../middleware/auth");
 import {
@@ -15,7 +15,9 @@ categoryRouter.route("/:id").put(requestValidator,verifyAndGetUserRoles,[validat
 categoryRouter.route("/:id").delete(requestValidator,verifyAndGetUserRoles,tryCatchController(deleteCategory));
 categoryRouter.route("/").get(requestValidator,verifyAndGetUserRoles,tryCatchController(getAllCategories));
 categoryRouter.route("/:id").get(requestValidator,verifyAndGetUserRoles,getInfoForCategory);
-categoryRouter.route('/:id/').patch(requestValidator,verifyAndGetUserRoles,updateCategoryWithImage);
+//categoryRouter.route('/:id/').patch(requestValidator,verifyAndGetUserRoles,updateCategoryWithImage);
+categoryRouter.route('/image/:id/').delete(requestValidator,verifyAndGetUserRoles,deleteCategoryImage);
+categoryRouter.route('/image/:id/').put(requestValidator,verifyAndGetUserRoles,updateCategoryImage);
 categoryRouter.route('/upload/:categoryId').post(requestValidator,verifyAndGetUserRoles,upload.single('file'),uploadCategoryImage);
 
 

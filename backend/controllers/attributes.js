@@ -72,3 +72,27 @@ export const addAttributeValue = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error adding attribute value' });
     }
 };
+
+
+export const getAttributeValuesbyid = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Attribute ID is required' });
+    }
+
+    const query = 'SELECT value FROM attribute_value WHERE id = $1';
+    const value = await db.oneOrNone(query, [id]);
+
+    if (!value) {
+      return res.status(404).json({ success: false, message: 'Attribute value not found' });
+    }
+
+    return res.status(200).json({ success: true, data: value });
+
+  } catch (error) {
+    console.error('Error fetching attribute value:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};

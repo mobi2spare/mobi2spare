@@ -1,6 +1,6 @@
 import express from "express";
 export const brandRouter = express.Router();
-import {addBrand,getAllBrands ,updateBrand,deleteBrand} from "../controllers/brands.js";
+import {addBrand,getAllBrands ,updateBrand,deleteBrand,getBrandById} from "../controllers/brands.js";
 import {
     validateAddCategoryRequest
   } from "../validators/category.js";
@@ -12,6 +12,7 @@ brandRouter.route("/").post(requestValidator,verifyAndGetUserRoles,[validateAddC
 brandRouter.route("/:id").put(requestValidator,verifyAndGetUserRoles,[validateAddCategoryRequest],tryCatchController(updateBrand));
 brandRouter.route("/:id").delete(requestValidator,verifyAndGetUserRoles,tryCatchController(deleteBrand));
 brandRouter.route("/").get(requestValidator,verifyAndGetUserRoles,tryCatchController(getAllBrands));
+brandRouter.route("/:id").get(requestValidator,verifyAndGetUserRoles,tryCatchController(getBrandById));
 
 
 

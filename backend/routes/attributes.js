@@ -1,6 +1,6 @@
 import express from "express";
 export const attributeRouter = express.Router();
-import {addAttribute,addAttributeValue,mapCategoryToAttributes,getAttributeValuesForCategories } from "../controllers/attributes.js";
+import {addAttribute,addAttributeValue,mapCategoryToAttributes,getAttributeValuesForCategories,getAttributeValuesbyid } from "../controllers/attributes.js";
 import {
     validateAddAttributeRequest,validateAddAttributeValueRequest
   } from "../validators/attributes.js";
@@ -12,5 +12,6 @@ attributeRouter.route("/create").post(requestValidator,verifyAndGetUserRoles,[va
 attributeRouter.route("/:id").post(requestValidator,verifyAndGetUserRoles,[validateAddAttributeValueRequest],addAttributeValue);
 
 attributeRouter.route("/").get(requestValidator,verifyAndGetUserRoles,getAttributeValuesForCategories);
+attributeRouter.route("/getvalue/:id").get(requestValidator,verifyAndGetUserRoles,getAttributeValuesbyid);
 
 

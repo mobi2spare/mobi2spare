@@ -4,8 +4,8 @@ import { StatusCodes } from "http-status-codes";
 dotenv.config();
 
 const SUREPASS_TOKEN = process.env.SUREPASS_TOKEN;
-const SUREPASS_ADHAR_GENERATE_URL = process.env.SUREPASS_ADHAR_GENERATE_URL || 'https://sandbox.surepass.io/api/v1/aadhaar-v2/generate-otp';
-const SUREPASS_ADHAR_VERIFY_URL = process.env.SUREPASS_ADHAR_VERIFY_URL || 'https://sandbox.surepass.io/api/v1/aadhaar-v2/submit-otp';
+const SUREPASS_ADHAR_GENERATE_URL = process.env.SUREPASS_ADHAR_GENERATE_URL;
+const SUREPASS_ADHAR_VERIFY_URL = process.env.SUREPASS_ADHAR_VERIFY_URL ;
 
 export const generateAdharOtp = async (req, res) => {
     const { adharNumber } = req.body;

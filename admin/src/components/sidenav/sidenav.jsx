@@ -4,8 +4,10 @@ import './sidenav.css';
 const Sidenav = ({ onOptionClick }) => {
   const options = [
     'Category Management',
+    'All Requests',
     'Request Management',
-    'Seller Management'
+    'Brand Management',
+    'Model Management'
   ];
 
   return (

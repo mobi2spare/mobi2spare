@@ -1,0 +1,36 @@
+.add-image-category {
+    padding: 20px;
+  }
+  
+  .add-image-category h2 {
+    margin-bottom: 20px;
+  }
+  
+  .add-image-category form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add-image-category input[type="file"] {
+    margin-bottom: 10px;
+  }
+  
+  .add-image-category button {
+    padding: 10px 20px;
+    margin: 5px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .add-image-category button:hover {
+    background-color: #0056b3;
+  }
+  
+  .add-image-category p {
+    margin-top: 10px;
+    color: red;
+  }
+  

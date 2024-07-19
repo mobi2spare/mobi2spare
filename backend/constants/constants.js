@@ -4,7 +4,7 @@ dotenv.config();
 import * as path from 'path';
 import * as fs from 'fs';
 
-const FILE_UPLOAD_PATH = process.env.FILE_UPLOAD_PATH || 'uploads/';
+const FILE_UPLOAD_PATH = process.env.FILE_UPLOAD_PATH;
 
 export const ROLES = {
     Admin: 'Admin',

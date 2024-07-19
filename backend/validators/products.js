@@ -21,7 +21,7 @@ export const validateAddListingRequest = [
     .isInt({ min: 1 }) // Validate that it's an integer greater than or equal to 1
     .withMessage("A valid category_id is required"),
 
-  check('user_id')
+  check('seller_id')
     .isInt({ min: 1 }) // Validate that it's an integer greater than or equal to 1
     .withMessage("A valid seller is required"),
 
