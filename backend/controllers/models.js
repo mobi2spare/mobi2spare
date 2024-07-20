@@ -126,5 +126,55 @@ export const deleteModels = async (req, res)=>{
 }
 
 export const updateModel = async (req, res) => {
+  const { model_id } = req.params;
+  const { model_name, brand_id, ram_storage_ids } = req.body;
 
-}
+  try {
+    // Check if the model with the given model_id exists
+    const checkModelQuery = 'SELECT COUNT(*) FROM model WHERE id = $1';
+    const { count } = await db.one(checkModelQuery, [model_id]);
+
+    if (count === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: 'Model not found',
+      });
+    }
+
+    // Update model_name and brand_id if provided
+    if (model_name && brand_id) {
+      const updateModelQuery = 'UPDATE model SET model_name = $1, brand_id = $2 WHERE id = $3';
+      await db.none(updateModelQuery, [model_name, brand_id, model_id]);
+    } else if (model_name) {
+      const updateModelNameQuery = 'UPDATE model SET model_name = $1 WHERE id = $2';
+      await db.none(updateModelNameQuery, [model_name, model_id]);
+    } else if (brand_id) {
+      const updateBrandIdQuery = 'UPDATE model SET brand_id = $1 WHERE id = $2';
+      await db.none(updateBrandIdQuery, [brand_id, model_id]);
+    }
+
+    // Update ram_storage mappings if provided
+    if (ram_storage_ids && Array.isArray(ram_storage_ids)) {
+      // First, delete existing mappings for the model
+      const deleteMappingsQuery = 'DELETE FROM model_ram_storage_mapping WHERE model_id = $1';
+      await db.none(deleteMappingsQuery, [model_id]);
+
+      // Insert new mappings
+      const insertMappingsQuery = 'INSERT INTO model_ram_storage_mapping (model_id, ram_storage_id) VALUES ($1, $2)';
+      const queries = ram_storage_ids.map(async ram_storage_id => {
+        try {
+          await db.none(insertMappingsQuery, [model_id, ram_storage_id]);
+        } catch (error) {
+          console.error('Error inserting ram_storage_id:', error);
+        }
+      });
+
+      await Promise.all(queries);
+    }
+
+    res.status(StatusCodes.OK).json({ message: 'Model updated successfully!' });
+  } catch (error) {
+    console.error('Error updating model:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};
+

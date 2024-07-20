@@ -8,8 +8,7 @@ import ApproveDeny from './components/approvedeny/approvedeny.jsx';
 import CategoryManagement from './components/categorymanagement/categorymanagement.jsx';
 import BrandManagement from './components/brandmanagement/brandmanagement.jsx';
 import ModelManagement from './components/modelmanagement/modelmanagement.jsx';
-import dotenv from 'dotenv';
-dotenv.config();
+
 
 function App() {
 

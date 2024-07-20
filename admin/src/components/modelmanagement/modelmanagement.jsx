@@ -14,6 +14,7 @@ const ModelManagement = () => {
   }, []);
 
   const fetchModels = async () => {
+    console.log(process.env.TOKEN)
     try {
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; // Replace with your actual token
       const response = await axios.get('http://localhost:8800/api/models/', {
