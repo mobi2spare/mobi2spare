@@ -25,7 +25,6 @@ const CategoryManagement = () => {
 
   const fetchCategories = async () => {
     try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms';
       const response = await axios.get('http://localhost:8800/api/category', {
         headers: {
           'Authorization': `Bearer ${process.env.TOKEN}`
@@ -59,7 +58,6 @@ const CategoryManagement = () => {
 
     if (confirmed) {
       try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms';
 
         const response = await axios.delete(`http://localhost:8800/api/category/${categoryId}`, {
           headers: {
@@ -93,7 +91,6 @@ const CategoryManagement = () => {
 
     if (confirmed) {
       try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms';
 
         const response = await axios.delete(`http://localhost:8800/api/category/image/${categoryId}`, {
           headers: {

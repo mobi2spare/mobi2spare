@@ -22,7 +22,6 @@ const AddImageCategory = ({ categoryId, onBack, onImageAdded }) => {
     formData.append('file', file);
 
     try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms';
       const uploadResponse = await axios.post(`http://localhost:8800/api/category/upload/${categoryId}`, formData, {
         headers: {
           'Authorization': `Bearer ${process.env.TOKEN}`,

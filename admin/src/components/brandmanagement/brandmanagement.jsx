@@ -19,7 +19,6 @@ const BrandManagement = () => {
 
   const fetchBrands = async () => {
     try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; 
       const response = await axios.get('http://localhost:8800/api/brands/', {
         headers: {
           'Authorization': `Bearer ${process.env.TOKEN}`
@@ -40,8 +39,7 @@ const BrandManagement = () => {
   const handleDeleteBrand = async (id) => {
     const confirmed = window.confirm('Are you sure you want to delete this brand?');
     if (confirmed) {
-      try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; // Ensure this token is valid and not expired
+      try {// Ensure this token is valid and not expired
         const response = await axios.delete(`http://localhost:8800/api/brands/${id}`, {
           headers: {
             'Authorization': `Bearer ${process.env.TOKEN}`

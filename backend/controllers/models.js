@@ -130,7 +130,6 @@ export const updateModel = async (req, res) => {
   const { model_name, brand_id, ram_storage_ids } = req.body;
 
   try {
-    // Check if the model with the given model_id exists
     const checkModelQuery = 'SELECT COUNT(*) FROM model WHERE id = $1';
     const { count } = await db.one(checkModelQuery, [model_id]);
 
@@ -140,7 +139,6 @@ export const updateModel = async (req, res) => {
       });
     }
 
-    // Update model_name and brand_id if provided
     if (model_name && brand_id) {
       const updateModelQuery = 'UPDATE model SET model_name = $1, brand_id = $2 WHERE id = $3';
       await db.none(updateModelQuery, [model_name, brand_id, model_id]);
@@ -152,13 +150,10 @@ export const updateModel = async (req, res) => {
       await db.none(updateBrandIdQuery, [brand_id, model_id]);
     }
 
-    // Update ram_storage mappings if provided
     if (ram_storage_ids && Array.isArray(ram_storage_ids)) {
-      // First, delete existing mappings for the model
       const deleteMappingsQuery = 'DELETE FROM model_ram_storage_mapping WHERE model_id = $1';
       await db.none(deleteMappingsQuery, [model_id]);
 
-      // Insert new mappings
       const insertMappingsQuery = 'INSERT INTO model_ram_storage_mapping (model_id, ram_storage_id) VALUES ($1, $2)';
       const queries = ram_storage_ids.map(async ram_storage_id => {
         try {

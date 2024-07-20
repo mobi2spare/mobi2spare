@@ -8,8 +8,7 @@ const EditBrand = ({ brandId, brandName, onBack, onBrandUpdated }) => {
 
   const handleUpdateBrand = async () => {
     setLoading(true);
-    try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; // Ensure this token is valid and not expired
+    try { // Ensure this token is valid and not expired
       const response = await axios.put(
         `http://localhost:8800/api/brands/${brandId}`,
         { name },

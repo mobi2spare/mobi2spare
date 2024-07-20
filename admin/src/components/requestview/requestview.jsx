@@ -11,7 +11,6 @@ const RequestView = () => {
 
   const fetchRequests = async (id) => {
     try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMDg2NjAwMCwiZXhwIjoxNzIzNDU4MDAwfQ.SWBrn4wy-_lSbrOup5qtxNniI-yAwO3tjr08yeWKDYY';
       const response = await axios.get(`http://localhost:8800/api/requests/${id}`, {
         headers: {
           'Authorization': `Bearer ${process.env.TOKEN}`

@@ -10,8 +10,7 @@ const TempRequestsTable = () => {
 
   useEffect(() => {
     const fetchTempRequests = async () => {
-      try {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; // Ensure this token is valid and not expired
+      try {// Ensure this token is valid and not expired
         const response = await axios.get('http://localhost:8800/api/admin/getempreq', {
           headers: {
             'Authorization': `Bearer ${process.env.TOKEN}`
@@ -74,8 +73,7 @@ const TempRequestsTable = () => {
   };
 
   const handleApprove = async (request) => {
-    try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; // Ensure this token is valid and not expired
+    try { // Ensure this token is valid and not expired
       const model_name = request.model_id ? '' : request.model_name;
       const ram_storage_name = request.ram_storage_id ? '' : request.ram_storage_config;
 
@@ -122,8 +120,7 @@ const TempRequestsTable = () => {
   };
 
   const handleDeny = async (request) => {
-    try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJHZW5lcmFsVXNlciIsImlhdCI6MTcyMTA3MTU4NiwiZXhwIjoxNzIzNjYzNTg2fQ.cjXbALdWVBGlWe_jYrUZqPyuihVe3IcdarRBT6h3jms'; // Ensure this token is valid and not expired
+    try {// Ensure this token is valid and not expired
       const response = await axios.post(`http://localhost:8800/api/admin/products/deny/${request.request_id}`, {}, {
         headers: {
           'Authorization': `Bearer ${process.env.TOKEN}`
