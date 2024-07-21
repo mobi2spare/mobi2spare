@@ -3,8 +3,7 @@ import db from '../db/db.js'
 
 export const getMatchingModelForSearchString = async (req, res)=> {
 
-  const { search_query } = req.body;
-  console.log(search_query);
+  const  search_query  = req.query['query'];
   const models = await db.manyOrNone("SELECT COALESCE(json_agg(model_name), '[]') AS model_names FROM model WHERE model_name LIKE '%' || $1 || '%'",[search_query]) ;
   res.status(StatusCodes.OK).json({
     success: true,
