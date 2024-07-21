@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
-import { Product } from '../../constants/models';
+import { CartProduct, Product } from '../../constants/models';
 import {ProductCard} from '../common/product_card';
 import CircularProgress from '@mui/material/CircularProgress';
 import api from '../../utils/network_requests';
@@ -11,7 +11,7 @@ import { useInView } from 'react-intersection-observer';
 
 function PaginatedGrid(props: any) {
 
-  const { apiUrl, style,flexDirection,categoryId } = props;
+  const { apiUrl, style,flexDirection,categoryId,cartId } = props;
 
   let queryKey;
 
@@ -29,7 +29,7 @@ function PaginatedGrid(props: any) {
     hasNextPage,
     isFetching,
     isLoading,
-  } = useInfiniteQuery(queryKey, ({ pageParam = 1 }) => api.get(`${apiUrl}?page=${pageParam}`), {
+  } = useInfiniteQuery(queryKey, ({ pageParam = 1 }) => api.get(`${apiUrl}?page=${pageParam}&cartid=${cartId}`), {
     getNextPageParam: (lastPage) => {
       if (lastPage && lastPage.data.pagination.page >= lastPage.data.pagination.totalPages){
         return undefined;
@@ -57,7 +57,7 @@ const { ref, inView } = useInView({threshold:0.5});
   return (
     <Box sx={{display:'flex',flexDirection:{flexDirection}}} > 
        <Grid container sx={style}>
-        {data && flattenedData.map((product: Product,i) => (
+        {data && flattenedData.map((product: CartProduct,i) => (
           <Grid key={product && product.id} item md={4}>
           <ProductCard product={product} />
           </Grid>

@@ -8,8 +8,11 @@ import { REACT_QUERY_ADD_TO_CART } from '../../constants/react-query-constants';
 import api from '../../utils/network_requests';
 import { toast } from 'react-toastify';
 import { User } from '../../contexts/auth/auth.context';
-import { USER } from '../../constants/constants';
-import { AttributeInfo, Product } from '../../constants/models';
+import { UI_BASE_URL, USER } from '../../constants/constants';
+import { AttributeInfo, CartProduct } from '../../constants/models';
+import CardActionArea from '@mui/material/CardActionArea';
+import { useNavigate } from 'react-router-dom';
+import { PRODUCT, PRODUCT_INFO } from '../../router/router-path';
 
 interface CartAddInfo  {
     product_id : number,
@@ -17,17 +20,18 @@ interface CartAddInfo  {
 }
 
 interface ProductProps {
-    product:Product
+    product:CartProduct
 }
 
 export const ProductCard: React.FC<ProductProps> = ({ product }) => {
     const [isUpdatingCart, setIsUpdatingCart] = useState(false);
-
+    const navigate = useNavigate();
 
     const handleAddCartButtonClick = () => {
+
         setIsUpdatingCart(true);
         toast.dismiss();
-        toast.loading('Updating cart', { progress: undefined })
+        
          // Trigger the query on button click
     };
 
@@ -37,8 +41,13 @@ export const ProductCard: React.FC<ProductProps> = ({ product }) => {
 
     }
 
+    const handleProductCardClick = (_:any)=>{
+        navigate(`/${UI_BASE_URL+PRODUCT}/${product.id}`,{ state: { product: product } });
+    }
+
     const  updateCart = async ()=>{
-       
+        if (product.cart_quantity==null ||  product.cart_quantity < product.quantity){
+        toast.loading('Updating cart', { progress: undefined })
         const item = localStorage.getItem(USER);
         const user : User  = JSON.parse(item || '{}');
         const cartId = user.cartId
@@ -47,23 +56,35 @@ export const ProductCard: React.FC<ProductProps> = ({ product }) => {
             cart_id:cartId
 
         }
-        const result = await api.post(BASE_URL+ADD_TO_CART,cartData);
+        await api.post(BASE_URL+ADD_TO_CART,cartData);
         if (cartError){
             toast.dismiss();
             toast.error('Failed to add item to cart');
         }
         else{
+            if (product.cart_quantity===null){
+                product.cart_quantity = 1
+            }
+            else{
+                product.cart_quantity +=1
+            }
+            console.log(product);
             toast.dismiss();
             toast.info('Cart updated successfully');
         }
         
         
         setIsUpdatingCart(false);
+    }
+    else{
+        console.log(product);
+        toast.info('You have reached the maximum quantity for this item')
+    }
 
     }
 
     const { isLoading, error:cartError } = useQuery(REACT_QUERY_ADD_TO_CART, updateCart, {
-        enabled: isUpdatingCart,retry:1 // Only fetch data when isFetching is true
+        enabled: isUpdatingCart ,retry:1 // Only fetch data when isFetching is true
       });
 
 
@@ -72,8 +93,8 @@ export const ProductCard: React.FC<ProductProps> = ({ product }) => {
 
             <Card square sx={{ 'backgroundColor': 'white', marginTop: '0px', overflow: 'visible', margin: '1rem', borderRadius: '0.5rem', width: '10rem', padding: '0.1rem', boxShadow: '5', display: 'flex' }}>
 
-
-                <CardContent sx={{ color: 'black', display: 'flex', flexDirection: 'column',padding:'0.5rem'  }}>
+                <CardActionArea onClick={handleProductCardClick}>
+                <CardContent sx={{ color: 'black', display: 'flex', flexDirection: 'column',padding:'0.5rem',paddingBottom:'0rem'  }}>
 
                     <Box sx={{ height: '7rem', display: 'flex',width:'100%' }}>
                         {product && product.image_path && product.image_path.length > 0 ? <img src={BASE_URL + '/' + product.image_path[0]} style={{ 'objectFit': 'contain' }} width='100%' height='100%' alt={product && product.name} loading='lazy' /> : <img src={placeholder_product} />}
@@ -106,6 +127,7 @@ export const ProductCard: React.FC<ProductProps> = ({ product }) => {
                     </Box>
 
                 </CardContent>
+                </CardActionArea>
 
                 {/*  */}
             </Card>

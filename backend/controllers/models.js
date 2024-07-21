@@ -1,11 +1,16 @@
 import { StatusCodes } from "http-status-codes";
-import { validateErrors } from "../validators/common_validation.js";
-import { uploadProductImages } from "../utils/utils.js";
 import db from '../db/db.js'
 
-import pgPromise from 'pg-promise';
-const pgp = pgPromise({});
+export const getMatchingModelForSearchString = async (req, res)=> {
 
+  const { search_query } = req.body;
+  console.log(search_query);
+  const models = await db.manyOrNone("SELECT COALESCE(json_agg(model_name), '[]') AS model_names FROM model WHERE model_name LIKE '%' || $1 || '%'",[search_query]) ;
+  res.status(StatusCodes.OK).json({
+    success: true,
+    data: models
+})
+}
 
 export const getAllModelsForBrand = async (req, res) => {
 

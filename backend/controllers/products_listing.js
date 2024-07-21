@@ -286,6 +286,11 @@ export const getAllProducts = async (req, res) => {
 
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
+    const cartId = parseInt(req.query.cartid);
+    console.log(cartId);
+    if (!cartId){
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cart id invalid" });
+    }
     try {
 
         const totalProductsQuery = 'SELECT COUNT(*) AS total FROM products';
@@ -295,7 +300,7 @@ export const getAllProducts = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const query = `
-        SELECT products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+        SELECT products.quantity as quantity, COALESCE(cartitems.quantity, 0) as cart_quantity,products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
         model.model_name as mname, ram_storage.configuration,
         COALESCE(
         jsonb_agg(json_build_object(attribute_info.attribute_name, attribute_value.value))
@@ -309,17 +314,17 @@ export const getAllProducts = async (req, res) => {
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
                 INNER JOIN model ON  products.model_id = model.id
-                INNER JOIN model_ram_storage_mapping ON model_ram_storage_mapping.model_id = model.id
-				LEFT JOIN ram_storage ON ram_storage.id = model_ram_storage_mapping.ram_storage_id
+				INNER JOIN ram_storage ON ram_storage.id = products.ram_storage_id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.id = attribute_info.id
-                WHERE products.quantity > 0
-                GROUP BY products.id, categories.name, brands.name,model.model_name,ram_storage.configuration
+                LEFT JOIN cartitems ON cartitems.product_id = products.id AND cartitems.cart_id = $3
+                WHERE products.quantity > 0 
+                GROUP BY products.id,cartitems.quantity, categories.name, brands.name,model.model_name,ram_storage.configuration
                 ORDER BY products.id ASC
                 LIMIT $1    
                 OFFSET $2`;
-        const values = [limit, offset]; // Parameters for prepared statement
+        const values = [limit, offset,cartId]; // Parameters for prepared statement
 
         const result = await db.many(query, values);
 
@@ -357,16 +362,18 @@ export const getAllProductsForCategory = async (req, res) => {
     const id = req.params['id'];
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
+    const cartId = parseInt(req.query.cartid);
+    if (!cartId){
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cart id invalid" });
+    }
     try {
-        console.log(page);
-        console.log(limit);
         const totalProductsQuery = 'SELECT COUNT(*) AS total FROM products WHERE category_id = $1';
         const totalResult = await db.any(totalProductsQuery, [id]);
         const total = totalResult[0].total; // Assuming a single row result
 
         const offset = (page - 1) * limit;
         const query = `
-                    SELECT products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
+                    SELECT products.quantity as quantity,COALESCE(cartitems.quantity, 0) as cart_quantity,products.price, products.id, products.name, products.description, products.brand_id, products.category_id, categories.name AS cname, brands.name AS bname,
                     model.model_name as mname, ram_storage.configuration,
                     COALESCE(
                     jsonb_agg(DISTINCT jsonb_build_object('attribute_name',attribute_info.attribute_name,'attribute_value', attribute_value.value))
@@ -380,19 +387,19 @@ export const getAllProductsForCategory = async (req, res) => {
                 INNER JOIN categories ON products.category_id = categories.id
                 INNER JOIN brands ON products.brand_id = brands.id
                 INNER JOIN model ON  products.model_id = model.id
-                INNER JOIN model_ram_storage_mapping ON model_ram_storage_mapping.model_id = model.id
-				LEFT JOIN ram_storage ON ram_storage.id = model_ram_storage_mapping.ram_storage_id
+				INNER JOIN ram_storage ON ram_storage.id = products.ram_storage_id
                 LEFT JOIN product_attributes ON products.id = product_attributes.product_id
                 LEFT JOIN attribute_value ON product_attributes.attribute_value_id = attribute_value.id
                 LEFT JOIN attribute_info ON attribute_value.attribute_id = attribute_info.id
+                LEFT JOIN cartitems ON cartitems.product_id = products.id AND  cartitems.cart_id = $4
                 WHERE products.category_id = $1
                 AND products.quantity > 0
-                GROUP BY products.id, categories.name, brands.name,model.model_name,ram_storage.configuration
+                GROUP BY products.id,cartitems.quantity, categories.name, brands.name,model.model_name,ram_storage.configuration
                 ORDER BY products.id ASC
                 LIMIT $2    
                 OFFSET $3`;
 
-        const values = [id, limit, offset]; // Parameters for prepared statement
+        const values = [id, limit, offset,cartId]; // Parameters for prepared statement
 
         const result = await db.manyOrNone(query, values);
 

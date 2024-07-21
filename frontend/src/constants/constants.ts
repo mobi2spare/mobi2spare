@@ -3,6 +3,7 @@ import exp from "constants";
 export const TOKEN = 'token'
 export const REFRESHTOKEN = 'refreshToken'
 export const USER = 'user'
+export const UI_BASE_URL = '//localhost:8801'
 // export const 
 export const ROLES = {
     Admin: 'Admin',

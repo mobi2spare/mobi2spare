@@ -7,7 +7,7 @@ import { Routes, Route, Outlet } from 'react-router-dom'
 import Login from './pages/login';
 import SignUp from './pages/signup';
 import { AuthContext, AuthProvider } from './contexts/auth/auth.context';
-import { REGISTER, SIGN_IN, OTP, USERHOME, PRODUCT_CATEGORY, PRODUCT_BUY_SELL_DETAILS, PRODUCT_REQUEST_DETAILS, CART, REQUESTS } from './router/router-path';
+import { REGISTER, SIGN_IN, OTP, USERHOME, PRODUCT_CATEGORY, PRODUCT_BUY_SELL_DETAILS, PRODUCT_REQUEST_DETAILS, CART, REQUESTS, PRODUCT_INFO } from './router/router-path';
 import { ToastContainer } from 'react-toastify';
 import Otp from './pages/otp';
 import UserHome from './pages/userhome';
@@ -27,6 +27,7 @@ import {store} from './store/store';
 import ProductRequestDetails from './pages/buysell/productrequestdetails';
 import ShoppingCart from './pages/cart/cart';
 import Requests from './pages/requests/requests';
+import SingleProductInfo from './pages/product-info';
 
 
 function App() {
@@ -88,9 +89,10 @@ function App() {
               <Route path={PRODUCT_REQUEST_DETAILS} element={<ProductRequestDetails />} />
               <Route path={CART} element={<ShoppingCart />} />
               <Route path={REQUESTS} element={<Requests />} />
+              <Route path={PRODUCT_INFO} element={<SingleProductInfo />} />
             </Route>
             
-            <Route path="singleproduct" element={<SingleProduct />} />
+            
 
           </Routes>
          

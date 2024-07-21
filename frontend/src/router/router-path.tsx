@@ -15,6 +15,8 @@ export const PRODUCT_BUY_SELL_DETAILS = '/product/sell';
 export const PRODUCT_REQUEST_DETAILS = '/product/request';
 export const CART  = '/cart'
 export const REQUESTS  = '/requests'
+export const PRODUCT_INFO = '/product/:id'
+export const PRODUCT = '/product'
 
 
 

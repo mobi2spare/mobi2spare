@@ -27,20 +27,5 @@ db.connect()
   .catch(error => {
     console.log('ERROR:', error.message || error);
   });
-
-  const fetchCategories = async () => {
-    const query = 'SELECT id, name FROM public.categories ORDER BY id ASC';
-  
-    try {
-      const categories = await db.any(query);
-      console.log('Categories:', categories);
-      return categories;
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      throw error;
-    }
-  };
-  
-  fetchCategories();
-  
+    
 export default db;

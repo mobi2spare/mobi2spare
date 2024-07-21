@@ -1,10 +1,11 @@
 import express from "express";
 export const modelsRouter = express.Router();
-import {getallModels,addModels,updateModel,deleteModels,getAllModelsForBrand } from "../controllers/models.js";
+import {getallModels,addModels,updateModel,deleteModels,getAllModelsForBrand,getMatchingModelForSearchString } from "../controllers/models.js";
 import { requestValidator } from "../middleware/auth.js";
 import { verifyAndGetUserRoles } from "../validators/common_validation.js";
 import { tryCatchController } from "../utils/tryCatch.js"
 
+modelsRouter.route("/search").get(requestValidator,verifyAndGetUserRoles,tryCatchController(getMatchingModelForSearchString));
 modelsRouter.route("/:id").get(requestValidator,verifyAndGetUserRoles,tryCatchController(getAllModelsForBrand));
 modelsRouter.route("/").post(requestValidator,verifyAndGetUserRoles,tryCatchController(addModels));
 modelsRouter.route("/").get(requestValidator,verifyAndGetUserRoles,tryCatchController(getallModels));

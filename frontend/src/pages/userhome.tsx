@@ -5,7 +5,7 @@ import { Box, Card, CardContent, ImageList, ImageListItem, Typography } from '@m
 import SearchBar from '../components/common/search_bar';
 import { Category } from '../constants/models';
 import { BASE_URL, GET_CATEGORIES, GET_PRODUCTS } from '../utils/api';
-import { TOKEN } from '../constants/constants';
+import { TOKEN, USER } from '../constants/constants';
 import PaginatedGrid from '../components/layout/grid_pagination';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import api from '../utils/network_requests';
 import { useQuery } from 'react-query';
 import { setTitle } from '../store/actions';
 import { useDispatch } from 'react-redux';
+import { User } from '../contexts/auth/auth.context';
 
 export default function UserHome() {
 
@@ -29,6 +30,10 @@ export default function UserHome() {
         return data.data;
     
   };
+
+  const item = localStorage.getItem(USER);
+  const user : User  = JSON.parse(item || '{}');
+  const cartId = user.cartId
   
   const { isLoading: isLoadingCategory, error: errorCategories, data: categoriesData } = useQuery('categoryimages', fetchCategories);
 
@@ -82,12 +87,12 @@ export default function UserHome() {
       <Box sx={headerStyles}>
         <Typography sx={{...headerTypoGraphyStyles,...fontFamily}} >Explore</Typography>
       </Box>
-      <PaginatedGrid flexDirection='row' apiUrl={BASE_URL + GET_PRODUCTS} style={paginatedGridStyles}/>
+      <PaginatedGrid flexDirection='row' apiUrl={BASE_URL + GET_PRODUCTS} style={paginatedGridStyles} cartId={cartId}/>
 
       <Box sx={headerStyles}>
         <Typography sx={{...headerTypoGraphyStyles,...fontFamily}}>Best Selling</Typography>
       </Box>
-      <PaginatedGrid  flexDirection='row' apiUrl={BASE_URL + GET_PRODUCTS} style={paginatedGridStyles}/>
+      <PaginatedGrid flexDirection='row' apiUrl={BASE_URL + GET_PRODUCTS} style={paginatedGridStyles} cartId={cartId}/>
 
    
     </Box>
