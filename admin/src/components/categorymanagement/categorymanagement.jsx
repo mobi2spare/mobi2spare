@@ -5,6 +5,8 @@ import AddCategory from '../addcategory/addcategory.jsx';
 import EditCategory from '../editcategory/editcategory.jsx';
 import AddImageCategory from '../addimagecategory/addimagecategory.jsx';
 import UpdateImageCategory from '../updateimagecategory/updateimagecategory.jsx';
+import { getToken } from '../../tokenutility';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -18,6 +20,8 @@ const CategoryManagement = () => {
   const [showUpdateImageCategory, setShowUpdateImageCategory] = useState(false);
   const [imageCategoryId, setImageCategoryId] = useState(null);
   const [newCategoryId, setNewCategoryId] = useState(null);
+  const token = getToken();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     fetchCategories();
@@ -27,7 +31,7 @@ const CategoryManagement = () => {
     try {
       const response = await axios.get('http://localhost:8800/api/category', {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`
+          'Authorization': `Bearer ${token}`
         }
       });
 
@@ -61,7 +65,7 @@ const CategoryManagement = () => {
 
         const response = await axios.delete(`http://localhost:8800/api/category/${categoryId}`, {
           headers: {
-            'Authorization': `Bearer ${process.env.TOKEN}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
@@ -78,12 +82,12 @@ const CategoryManagement = () => {
   };
 
   const handleAddCategory = () => {
-    setShowAddCategory(true);
+    setShowAddCategory(true);// Navigate to addcategory within the current categorymanagement
   };
 
   const handleAddImage = (categoryId) => {
     setImageCategoryId(categoryId);
-    setShowAddImageCategory(true);
+    setShowAddImageCategory(true); // Navigate to addimage within the current categorymanagement
   };
 
   const handleDeleteImage = async (categoryId) => {
@@ -94,7 +98,7 @@ const CategoryManagement = () => {
 
         const response = await axios.delete(`http://localhost:8800/api/category/image/${categoryId}`, {
           headers: {
-            'Authorization': `Bearer ${process.env.TOKEN}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
@@ -112,28 +116,28 @@ const CategoryManagement = () => {
 
   const handleUpdateImage = (categoryId) => {
     setImageCategoryId(categoryId);
-    setShowUpdateImageCategory(true);
+    setShowUpdateImageCategory(true);// Navigate to editimage within the current categorymanagement
   };
 
   const handleCategoryAdded = async (categoryId) => {
     await fetchCategories();
     setShowAddCategory(false);
-    setNewCategoryId(categoryId);
+    setNewCategoryId(categoryId);// Navigate back to the main categorymanagement view
   };
 
   const handleCategoryUpdated = async () => {
     await fetchCategories();
-    setShowEditCategory(false);
+    setShowEditCategory(false);// Navigate back to the main categorymanagement view
   };
 
   const handleImageAdded = async () => {
     await fetchCategories();
-    setShowAddImageCategory(false);
+    setShowAddImageCategory(false);// Navigate back to the main categorymanagement view
   };
 
   const handleImageUpdated = async () => {
     await fetchCategories();
-    setShowUpdateImageCategory(false);
+    setShowUpdateImageCategory(false);// Navigate back to the main categorymanagement view
   };
 
   if (loading) {

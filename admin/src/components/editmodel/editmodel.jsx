@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './addmodel.css';
+import './editmodel.css';
 import { getToken } from '../../tokenutility';
 
-const AddModelForm = ({ onCancel, onModelAdded }) => {
-  const [model_name, setModelName] = useState('');
-  const [brand_id, setBrandId] = useState('');
-  const [selectedConfigurations, setSelectedConfigurations] = useState([]);
+const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
+  const [model_name, setModelName] = useState(model.model_name);
+  const [brand_id, setBrandId] = useState(model.brand_id);
+  const [selectedConfigurations, setSelectedConfigurations] = useState(model.ram_storage_ids || []);
   const [brands, setBrands] = useState([]);
   const [configurations, setConfigurations] = useState([]);
-  //const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
-  const token=getToken();
+  const token = getToken();
 
   useEffect(() => {
     fetchBrands();
@@ -30,7 +26,6 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
       setBrands(response.data.data);
     } catch (error) {
       console.error('Error fetching brands:', error.message);
-      setError('Failed to fetch brands');
     }
   };
 
@@ -44,7 +39,6 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
       setConfigurations(response.data.data);
     } catch (error) {
       console.error('Error fetching configurations:', error.message);
-      setError('Failed to fetch configurations');
     }
   };
 
@@ -52,7 +46,7 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8800/api/models/', {
+      const response = await axios.put(`http://localhost:8800/api/models/${model.id}`, {
         model_name,
         brand_id,
         ram_storage_ids: selectedConfigurations
@@ -62,16 +56,14 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
           'Content-Type': 'application/json'
         }
       });
-      if (response.data.message === 'Model created successfully!') {
-        setShowSuccessPopup(true);
-        onModelAdded(); // Trigger the parent component to refresh data
+
+      if (response.data.message === 'Model updated successfully!') {
+        onModelUpdated(); // Trigger the parent component to refresh data
       } else {
-        setError('Failed to add model');
-        setShowErrorPopup(true);
+        console.error('Failed to update model');
       }
     } catch (error) {
-      setError('Error adding model');
-      setShowErrorPopup(true);
+      console.error('Error updating model:', error);
     }
   };
 
@@ -85,8 +77,8 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
   };
 
   return (
-    <div className="add-model-form">
-      <h2>Add New Model</h2>
+    <div className="edit-model-form">
+      <h2>Edit Model</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Model Name:
@@ -121,7 +113,6 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
               <label>
                 <input
                   type="checkbox"
-                  value={config.id}
                   checked={selectedConfigurations.includes(config.id)}
                   onChange={() => handleChangeConfiguration(config.id)}
                 />
@@ -134,32 +125,8 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
         <button type="submit">Submit</button>
         <button type="button" onClick={onCancel}>Back</button>
       </form>
-      {error && <p className="error-message">{error}</p>}
-      {showSuccessPopup && (
-        <Popup
-          message="Model added successfully!"
-          onClose={() => setShowSuccessPopup(false)}
-        />
-      )}
-      {showErrorPopup && (
-        <Popup
-          message="Failed to add model. Please try again."
-          onClose={() => setShowErrorPopup(false)}
-        />
-      )}
     </div>
   );
 };
 
-const Popup = ({ message, onClose }) => {
-  return (
-    <div className="popup">
-      <div className="popup-content">
-        <p>{message}</p>
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-};
-
-export default AddModelForm;
+export default EditModelForm;

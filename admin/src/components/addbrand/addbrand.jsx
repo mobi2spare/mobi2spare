@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './addbrand.css'
+import './addbrand.css';
+import { getToken } from '../../tokenutility';
 
 const AddBrand = ({ onBack, onBrandAdded }) => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const token=getToken();
 
   const handleAddBrand = async () => {
     setLoading(true);
@@ -15,7 +17,7 @@ const AddBrand = ({ onBack, onBrandAdded }) => {
         { name },
         {
           headers: {
-            'Authorization': `Bearer ${process.env.TOKEN}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }

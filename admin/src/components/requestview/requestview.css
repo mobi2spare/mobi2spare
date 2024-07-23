@@ -1,3 +1,4 @@
+/* requestview.css */
 .request-management {
   display: flex;
   flex-direction: column;
@@ -64,7 +65,8 @@
   border-collapse: collapse;
 }
 
-.requests th, .requests td {
+.requests th,
+.requests td {
   border: 1px solid #e9ecef;
   padding: 10px;
   text-align: left;

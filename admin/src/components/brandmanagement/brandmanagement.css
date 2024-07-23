@@ -1,5 +1,10 @@
 .brand-management {
     margin: 20px;
+    width: calc(100% - 300px); /* Adjust based on sidebar width */
+    margin-top: 0px; /* Adjust based on your layout */
+    margin-left: 250px; /* Ensure there's proper spacing with the Sidenav */
+    padding: 20px;
+    position: absolute; 
   }
   
   .brand-table {

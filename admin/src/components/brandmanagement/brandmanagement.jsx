@@ -3,6 +3,7 @@ import axios from 'axios';
 import './brandmanagement.css'; 
 import AddBrand from '../addbrand/addbrand.jsx';
 import EditBrand from '../editbrand/editbrand.jsx';
+import { getToken } from '../../tokenutility';
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
@@ -12,7 +13,7 @@ const BrandManagement = () => {
   const [showEditBrand, setShowEditBrand] = useState(false);
   const [editBrandId, setEditBrandId] = useState(null);
   const [editBrandName, setEditBrandName] = useState('');
-
+  const token=getToken();
   useEffect(() => {
     fetchBrands();
   }, [showAddBrand, showEditBrand]); 
@@ -21,7 +22,7 @@ const BrandManagement = () => {
     try {
       const response = await axios.get('http://localhost:8800/api/brands/', {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.data.success) {
@@ -42,7 +43,7 @@ const BrandManagement = () => {
       try {// Ensure this token is valid and not expired
         const response = await axios.delete(`http://localhost:8800/api/brands/${id}`, {
           headers: {
-            'Authorization': `Bearer ${process.env.TOKEN}`
+            'Authorization': `Bearer ${token}`
           }
         });
         if (response.data.success) {

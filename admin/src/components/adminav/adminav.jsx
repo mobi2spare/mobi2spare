@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './adminav.css';
+import { getToken } from '../../tokenutility';
 
 const Adminav = ({ onLogout, username }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const token=getToken();
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);

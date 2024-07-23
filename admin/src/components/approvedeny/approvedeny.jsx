@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './approvedeny.css';
+import Cookies from 'js-cookie';
+import { getToken } from '../../tokenutility';
 
 const TempRequestsTable = () => {
   const [tempRequests, setTempRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-
+const token = getToken();
   useEffect(() => {
     const fetchTempRequests = async () => {
       try {// Ensure this token is valid and not expired
         const response = await axios.get('http://localhost:8800/api/admin/getempreq', {
           headers: {
-            'Authorization': `Bearer ${process.env.TOKEN}`
+            'Authorization': `Bearer ${token}`
           }
         });
 
@@ -26,22 +28,21 @@ const TempRequestsTable = () => {
           const requestsWithNames = await Promise.all(sortedData.map(async (request) => {
             const brandResponse = await axios.get(`http://localhost:8800/api/brands/${request.brand_id}`, {
               headers: {
-                'Authorization': `Bearer ${process.env.TOKEN}`
+                'Authorization': `Bearer ${token}`
               }
             });
 
             const categoryResponse = await axios.get(`http://localhost:8800/api/category/${request.category_id}`, {
               headers: {
-                'Authorization': `Bearer ${process.env.TOKEN}`
+                'Authorization': `Bearer ${token}`
               }
             });
            
             const attributeResponse = await axios.get(` http://localhost:8800/api/attribute/getvalue/${request.attribute_value_id}`, {
                 headers: {
-                  'Authorization': `Bearer ${process.env.TOKEN}`
+                  'Authorization': `Bearer ${token}`
                 }
               });
-            console.log(categoryResponse.data.name)
             return {
               ...request,
               brand_name: brandResponse.data.brandName || 'Unknown Brand',
@@ -123,7 +124,7 @@ const TempRequestsTable = () => {
     try {// Ensure this token is valid and not expired
       const response = await axios.post(`http://localhost:8800/api/admin/products/deny/${request.request_id}`, {}, {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`
+          'Authorization': `Bearer ${token}`
         }
       });
 

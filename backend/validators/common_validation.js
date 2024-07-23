@@ -39,5 +39,5 @@ export function validateErrors(req, res, next) {
 function isAdmin(user) {
     // Replace this with your logic to check if the user is an admin
     // This could involve checking a user role in the database or a flag in the user object
-    return user.role === 'admin';
+    return user.role === 'Admin';
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './editcategory.css';
+import { getToken } from '../../tokenutility';
 
 const EditCategory = ({ categoryId, categoryName, onBack, onCategoryUpdated }) => {
   const [name, setName] = useState(categoryName);
   const [message, setMessage] = useState(null);
+  const token=getToken();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,7 +14,7 @@ const EditCategory = ({ categoryId, categoryName, onBack, onCategoryUpdated }) =
     try {
       const response = await axios.put(`http://localhost:8800/api/category/${categoryId}`, { name }, {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

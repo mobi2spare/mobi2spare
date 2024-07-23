@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { getToken } from '../../tokenutility';
 
 const EditBrand = ({ brandId, brandName, onBack, onBrandUpdated }) => {
   const [name, setName] = useState(brandName);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const token=getToken();
 
   const handleUpdateBrand = async () => {
     setLoading(true);
@@ -14,7 +16,7 @@ const EditBrand = ({ brandId, brandName, onBack, onBrandUpdated }) => {
         { name },
         {
           headers: {
-            'Authorization': `Bearer ${process.env.TOKEN}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }

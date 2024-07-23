@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './addcategory.css';
+import { getToken } from '../../tokenutility';
 
 const AddCategory = ({ onBack, onCategoryAdded }) => {
   const [name, setName] = useState('');
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState(null);
+  const token=getToken();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -20,7 +22,7 @@ const AddCategory = ({ onBack, onCategoryAdded }) => {
 
       const uploadResponse = await axios.post(`http://localhost:8800/api/category/upload/1`, formData, {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
@@ -34,7 +36,7 @@ const AddCategory = ({ onBack, onCategoryAdded }) => {
 
       const response = await axios.post('http://localhost:8800/api/category', { name, imagePath }, {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

@@ -3,17 +3,18 @@ import axios from 'axios';
 import './requestview.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { getToken } from '../../tokenutility';
 
 const RequestView = () => {
   const [buyerId, setBuyerId] = useState('');
   const [requests, setRequests] = useState({ myRequests: [], otherRequests: [] });
   const [error, setError] = useState('');
-
   const fetchRequests = async (id) => {
     try {
+      const token=getToken();
       const response = await axios.get(`http://localhost:8800/api/requests/${id}`, {
         headers: {
-          'Authorization': `Bearer ${process.env.TOKEN}`
+          'Authorization': `Bearer ${token}`
         }
       });
       setRequests(response.data.data);
