@@ -11,7 +11,8 @@ import ApproveDeny from './components/approvedeny/approvedeny.jsx';
 import CategoryManagement from './components/categorymanagement/categorymanagement.jsx';
 import BrandManagement from './components/brandmanagement/brandmanagement.jsx';
 import ModelManagement from './components/modelmanagement/modelmanagement.jsx';
-
+import BannerManagement from './components/bannermanagement/bannermanagement.jsx';
+import UserManagement from './components/usermanagement/usermanagement.jsx';
 const App = () => {
   const { option } = useParams();
   const [selectedOption, setSelectedOption] = useState(option || '');
@@ -26,7 +27,6 @@ const App = () => {
 
   const handleLogout = () => {
     console.log('Logout clicked');
-    // Implement logout functionality
   };
 
   // Map option to component
@@ -42,6 +42,10 @@ const App = () => {
         return <BrandManagement />;
       case 'Model Management':
         return <ModelManagement />;
+      case 'Banner Management':
+        return <BannerManagement />;
+      case 'User Management':
+        return <UserManagement />;
       default:
         return null;
     }

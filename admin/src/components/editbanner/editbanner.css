@@ -1,0 +1,78 @@
+.edit-banner {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .edit-banner h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .edit-banner form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-banner label {
+    margin-bottom: 10px;
+  }
+  
+  .edit-banner input[type="text"],
+  .edit-banner textarea {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .edit-banner .button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .edit-banner .back-button,
+  .edit-banner .submit-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+  }
+  
+  .edit-banner .back-button {
+    background-color: #ccc;
+  }
+  
+  .edit-banner .submit-button {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .edit-banner .popup {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  .edit-banner {
+    padding: 20px;
+  }
+  
+  .video-preview-container {
+    margin-top: 20px;
+  }
+  
+  .video-preview video {
+    max-width: 100%;
+    height: auto;
+  }
+  
