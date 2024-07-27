@@ -1,6 +1,6 @@
-
-import React, { useState } from 'react';
-import './App.css';
+// App.js
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidenav from './components/sidenav/sidenav.jsx';
 import Adminav from './components/adminav/adminav.jsx';
 import RequestManagement from './components/requestview/requestview.jsx';
@@ -10,19 +10,55 @@ import BrandManagement from './components/brandmanagement/brandmanagement.jsx';
 import ModelManagement from './components/modelmanagement/modelmanagement.jsx';
 import BannerManagement from './components/bannermanagement/bannermanagement.jsx';
 import UserManagement from './components/usermanagement/usermanagement.jsx';
-// import dotenv from 'dotenv';
-// dotenv.config();
 
-function App() {
+const App = () => {
+  const { option } = useParams();
+  const [selectedOption, setSelectedOption] = useState(option || 'categorymanagement'); // Default to categorymanagement
+  const navigate = useNavigate();
 
-  const [selectedOption, setSelectedOption] = useState('Category Management');
+  useEffect(() => {
+    // If the option changes, update the state and navigate to the new route
+    if (option && option !== selectedOption) {
+      setSelectedOption(option.replace(/\s+/g, '').toLowerCase());
+    }
+  }, [option, selectedOption]);
+
+  useEffect(() => {
+    // If the selectedOption changes, navigate to the new route
+    if (selectedOption) {
+      navigate(`/admin/dashboard/${selectedOption}`);
+    }
+  }, [selectedOption, navigate]);
 
   const handleOptionClick = (option) => {
-    setSelectedOption(option);
+    const formattedOption = option.replace(/\s+/g, '').toLowerCase();
+    setSelectedOption(formattedOption);
   };
 
   const handleLogout = () => {
-    console.log('Logout clicked');
+    navigate('/admin/signin');
+  };
+
+  // Map option to component
+  const renderComponent = () => {
+    switch (selectedOption) {
+      case 'allrequests':
+        return <RequestManagement />;
+      case 'requestmanagement':
+        return <ApproveDeny />;
+      case 'categorymanagement':
+        return <CategoryManagement />;
+      case 'brandmanagement':
+        return <BrandManagement />;
+      case 'modelmanagement':
+        return <ModelManagement />;
+      case 'bannermanagement':
+        return <BannerManagement />;
+      case 'usermanagement':
+        return <UserManagement />;
+      default:
+        return <CategoryManagement />;
+    }
   };
 
   return (
@@ -31,17 +67,11 @@ function App() {
       <div className="main-content">
         <Sidenav onOptionClick={handleOptionClick} />
         <div className="content">
-          {selectedOption === 'All Requests' && <RequestManagement />}
-          {selectedOption === 'Request Management' && <ApproveDeny />}
-          {selectedOption === 'Category Management' && <CategoryManagement />}
-          {selectedOption === 'Banner Management' && <BannerManagement />}
-          {selectedOption === 'User Management' && <UserManagement />}
-          {selectedOption === 'Brand Management' && <BrandManagement />}
-          {selectedOption === 'Model Management' && <ModelManagement />}
+        {renderComponent()}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default App;
