@@ -19,6 +19,7 @@ const Dashboard = () => {
       <Route path="/admin" element={<Start />} />
       <Route path="/admin/signin" element={<Login />} />
       <Route path="/admin/dashboard" element={<App />}>
+        <Route index element={<CategoryManagement />} /> 
         <Route path="allrequests" element={<RequestManagement />} />
         <Route path="requestmanagement" element={<ApproveDeny />} />
         <Route path="categorymanagement" element={<CategoryManagement />} />

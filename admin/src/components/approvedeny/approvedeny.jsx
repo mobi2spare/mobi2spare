@@ -31,7 +31,6 @@ const token = getToken();
                 'Authorization': `Bearer ${token}`
               }
             });
-
             const categoryResponse = await axios.get(`http://localhost:8800/api/category/${request.category_id}`, {
               headers: {
                 'Authorization': `Bearer ${token}`
@@ -45,7 +44,7 @@ const token = getToken();
               });
             return {
               ...request,
-              brand_name: brandResponse.data.brandName || 'Unknown Brand',
+              brand_name: brandResponse.data.data.name || 'Unknown Brand',
               category_name: categoryResponse.data.data[0].name || 'Unknown Category',
               attribute_value:attributeResponse.data.data.value
             };

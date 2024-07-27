@@ -1,7 +1,7 @@
 // App.js
 // App.js
 // App.js
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Sidenav from './components/sidenav/sidenav.jsx';
@@ -17,6 +17,15 @@ const App = () => {
   const { option } = useParams();
   const [selectedOption, setSelectedOption] = useState(option || '');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!option) {
+      navigate('/admin/dashboard/categorymanagement'); // Redirect to default route
+    } else {
+      setSelectedOption(option.replace(/\s+/g, '').toLowerCase());
+    }
+  }, [option, navigate]);
+
  //console.log("l");
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -47,7 +56,7 @@ const App = () => {
       case 'User Management':
         return <UserManagement />;
       default:
-        return null;
+        return <CategoryManagement />;
     }
   };
 
