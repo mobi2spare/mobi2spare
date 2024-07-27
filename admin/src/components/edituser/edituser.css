@@ -1,0 +1,65 @@
+/* src/components/edituser/edituser.css */
+.edit-user {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .edit-user h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .edit-user form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-user label {
+    margin-bottom: 10px;
+  }
+  
+  .edit-user input[type="text"] {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .edit-user .button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .edit-user .back-button,
+  .edit-user .submit-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+  }
+  
+  .edit-user .back-button {
+    background-color: #ccc;
+  }
+  
+  .edit-user .submit-button {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .edit-user .popup {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+  }
+  

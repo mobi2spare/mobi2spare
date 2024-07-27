@@ -20,7 +20,8 @@ import { attributeRouter } from "./routes/attributes.js";
 import { modelsRouter } from "./routes/models.js";
 import { phoneConfigurationRouter } from "./routes/ram_storage.js";
 import { requestRouter } from "./routes/requests.js"; 
-
+import { banneRouter } from "./routes/banners.js" 
+//import { userRouter } from "./routes/users.js";
 // const brandRouter = require("./routes/brand");
 // const users = require("./routes/users");
 // const modals = require("./routes/modals");
@@ -41,13 +42,14 @@ app.use('/uploads',express.static(dir));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 import cors from "cors";
+import { userRouter } from "./routes/users.js";
 
 app.use(cors({origin: ['http://localhost:8801','http://192.168.29.105:8801','http://localhost:3000','http://localhost:3001']}));
 app.use(json());
 app.use("/api",authRouter);
 app.use("/api/category",categoryRouter);
 app.use("/api/brands", brandRouter);
-// app.use("/api/users", users);
+app.use("/api/users", userRouter);
 // app.use("/api/modals", modals);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
@@ -57,6 +59,7 @@ app.use("/api/phoneconfig",phoneConfigurationRouter);
 app.use("/api/admin",adminRouter);
 app.use("/api/cart",cartRouter);
 app.use("/api/requests",requestRouter);
+app.use("/api/banners",banneRouter);
 
 // //Port and Connect to DB
 const port = process.env.PORT || 8800;

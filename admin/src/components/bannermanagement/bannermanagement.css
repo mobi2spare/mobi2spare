@@ -1,0 +1,70 @@
+.banner-management {
+    width: calc(100% - 300px); /* Adjust based on sidebar width */
+    margin-top: 0px; /* Adjust based on your layout */
+    margin-left: 250px; /* Ensure there's proper spacing with the Sidenav */
+    padding: 20px;  
+    position: absolute; 
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .add-banner-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745; /* Green for Add button */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .add-banner-btn:hover {
+    background-color: #218838;
+  }
+  
+  .banner-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .banner-table th,
+  .banner-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .banner-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  .banner-table .edit-button,
+  .banner-table .delete-button {
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+  }
+  
+  .banner-table .edit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .banner-table .delete-button {
+    background-color: #dc3545; 
+  }
+  
+  .banner-table .delete-button:hover {
+    background-color: #c82333;
+  }
+  
+  button:hover {
+    cursor: pointer;
+  }
+  

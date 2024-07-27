@@ -74,7 +74,6 @@ export const addModels = async (req, res) => {
     }
 
     try {
-        // Check if model_name already exists for the given brand_id
         const checkModelQuery = 'SELECT COUNT(*) FROM model WHERE model_name = $1 AND brand_id = $2';
         const { count } = await db.one(checkModelQuery, [model_name, brand_id]);
 
@@ -84,7 +83,6 @@ export const addModels = async (req, res) => {
             });
         }
 
-        // If not duplicate, proceed with insertion
         const insertModelQuery = 'INSERT INTO model (model_name, brand_id) VALUES ($1, $2) RETURNING id';
         const modelResult = await db.one(insertModelQuery, [model_name, brand_id]);
 
@@ -126,7 +124,7 @@ export const deleteModels = async (req, res)=>{
 }
 
 export const updateModel = async (req, res) => {
-  const { model_id } = req.params;
+  const model_id  = req.params['id'];
   const { model_name, brand_id, ram_storage_ids } = req.body;
 
   try {
@@ -151,6 +149,7 @@ export const updateModel = async (req, res) => {
     }
 
     if (ram_storage_ids && Array.isArray(ram_storage_ids)) {
+      //console.log('aaaaaaaaaaaaaaaaaaaaaaaa'+model_id)
       const deleteMappingsQuery = 'DELETE FROM model_ram_storage_mapping WHERE model_id = $1';
       await db.none(deleteMappingsQuery, [model_id]);
 

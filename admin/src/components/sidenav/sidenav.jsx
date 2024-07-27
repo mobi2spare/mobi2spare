@@ -7,7 +7,9 @@ const Sidenav = ({ onOptionClick }) => {
     'All Requests',
     'Request Management',
     'Brand Management',
-    'Model Management'
+    'Model Management',
+    'Banner Management',
+    'User Management'
   ];
 
   function closeNav() {

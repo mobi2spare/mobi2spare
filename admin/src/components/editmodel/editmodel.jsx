@@ -5,7 +5,8 @@ import { getToken } from '../../tokenutility';
 
 const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
   const [model_name, setModelName] = useState(model.model_name);
-  const [brand_id, setBrandId] = useState(model.brand_id);
+  const [brand_name, setBrandName] = useState(model.brand_name); // For displaying the brand name
+  const [brand_id, setBrandId] = useState(model.brand_id); // For setting the brand in the form
   const [selectedConfigurations, setSelectedConfigurations] = useState(model.ram_storage_ids || []);
   const [brands, setBrands] = useState([]);
   const [configurations, setConfigurations] = useState([]);
@@ -97,12 +98,14 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
             onChange={(e) => setBrandId(e.target.value)}
             required
           >
-            <option value="">Select Brand</option>
-            {brands.map((brand) => (
-              <option key={brand.id} value={brand.id}>
-                {brand.name}
-              </option>
-            ))}
+            <option value="">{brand_name}</option>
+            {brands
+              .filter(brand => brand.name !== brand_name) // Exclude the current brand from options
+              .map((brand) => (
+                <option key={brand.id} value={brand.id}>
+                  {brand.name}
+                </option>
+              ))}
           </select>
         </label>
         <br />

@@ -31,7 +31,6 @@ const token = getToken();
                 'Authorization': `Bearer ${token}`
               }
             });
-
             const categoryResponse = await axios.get(`http://localhost:8800/api/category/${request.category_id}`, {
               headers: {
                 'Authorization': `Bearer ${token}`
@@ -43,11 +42,17 @@ const token = getToken();
                   'Authorization': `Bearer ${token}`
                 }
               });
+              const BuyerResponse = await axios.get(` http://localhost:8800/api/users/${request.seller_id}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
             return {
               ...request,
-              brand_name: brandResponse.data.brandName || 'Unknown Brand',
+              brand_name: brandResponse.data.data.name || 'Unknown Brand',
               category_name: categoryResponse.data.data[0].name || 'Unknown Category',
-              attribute_value:attributeResponse.data.data.value
+              attribute_value:attributeResponse.data.data.value,
+              buyer_name:BuyerResponse.data.username 
             };
           }));
 
@@ -183,7 +188,7 @@ const token = getToken();
             <th>Category Name</th>
             <th>quan</th>
             <th>desc</th>
-            <th>SI</th>
+            <th>BN</th>
             <th>Price</th>
             <th>MN</th>
             <th>RSC</th>
@@ -200,7 +205,7 @@ const token = getToken();
               <td>{request.category_name || 'null'}</td>
               <td>{request.quantity || 'null'}</td>
               <td>{request.description || 'null'}</td>
-              <td>{request.seller_id || 'null'}</td>
+              <td>{request.buyer_name || 'null'}</td>
               <td>{request.price || 'null'}</td>
               <td>{request.model_name || 'null'}</td>
               <td>{request.ram_storage_config || 'null'}</td>

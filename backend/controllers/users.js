@@ -114,3 +114,55 @@ export const signUp = async (req, res) => {
 
 };
 
+export const getAll = async (req, res) => {
+  try {
+    const users = await db.any('SELECT id, username, organization_name, address FROM users WHERE user_type = $1', ['GeneralUser']);
+
+    res.status(StatusCodes.OK).json({ users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const editUser = async (req, res) => {
+  const userId = req.params.id;
+  const { address, organization_name } = req.body;
+
+  if (!address || !organization_name) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Missing address or organization name' });
+  }
+
+  try {
+    const result = await db.none(
+      'UPDATE users SET address = $1, organization_name = $2 WHERE id = $3',
+      [address, organization_name, userId]
+    );
+
+    res.status(StatusCodes.OK).json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+export const getUser = async (req, res) => {
+  const { id } = req.params; 
+
+  try {
+    const user = await db.oneOrNone(
+      'SELECT username, organization_name, address FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (user) {
+      res.status(StatusCodes.OK).json(user);
+    } else {
+      res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};

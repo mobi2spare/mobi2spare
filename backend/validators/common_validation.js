@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import { validationResult } from "express-validator";
 import dotenv from 'dotenv';
 dotenv.config();
-
 const secret = process.env.JWT_SECRET ;
 
 export function verifyAndGetUserRoles(req, res, next) {
@@ -22,6 +21,7 @@ export function verifyAndGetUserRoles(req, res, next) {
         }
         req.userRoles = decodedAccessToken.role; // Store roles in request object
         req.userId = decodedAccessToken.userId; // Store user ID in request object
+        //console.log(req.userRoles);
         next();
     } catch (err) {
         return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });

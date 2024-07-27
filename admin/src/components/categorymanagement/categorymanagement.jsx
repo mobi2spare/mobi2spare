@@ -6,7 +6,7 @@ import EditCategory from '../editcategory/editcategory.jsx';
 import AddImageCategory from '../addimagecategory/addimagecategory.jsx';
 import UpdateImageCategory from '../updateimagecategory/updateimagecategory.jsx';
 import { getToken } from '../../tokenutility';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
