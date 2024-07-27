@@ -10,9 +10,9 @@ export const adminRouter = express.Router();
 
 // add user role for admin.
 // approve product request for req id
-adminRouter.route("/products/deny/:id").post(requestValidator,verifyAndGetUserRoles,isAdmin, denyTemporaryProductRequest);
-adminRouter.route("/products/approve/:id").post(requestValidator,verifyAndGetUserRoles,[validateAddListingRequest],isAdmin,sanitizeReqParams,tryCatchController(approveTemporaryProductRequest));
-adminRouter.route("/getempreq").get(requestValidator,verifyAndGetUserRoles,isAdmin, getAllTempRequests);
+adminRouter.route("/products/deny/:id").post(requestValidator,verifyAndGetUserRoles,denyTemporaryProductRequest1);
+adminRouter.route("/products/approve/:id").post(requestValidator,verifyAndGetUserRoles,[validateAddListingRequest],sanitizeReqParams,tryCatchController(approveTemporaryProductRequest1));
+adminRouter.route("/getempreq").get(requestValidator,verifyAndGetUserRoles,getAllTempRequests);
 // reject product request for req id - ONLY allowed if not already approved
 
 
