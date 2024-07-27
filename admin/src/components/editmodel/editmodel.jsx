@@ -17,6 +17,11 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
     fetchConfigurations();
   }, []);
 
+  useEffect(() => {
+    // Log to ensure model.ram_storage_ids is correct
+    console.log('Selected Configurations:', selectedConfigurations);
+  }, [selectedConfigurations]);
+
   const fetchBrands = async () => {
     try {
       const response = await axios.get('http://localhost:8800/api/brands/', {
@@ -70,11 +75,11 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
 
   const handleChangeConfiguration = (configId) => {
     // Toggle selection of configuration ID
-    if (selectedConfigurations.includes(configId)) {
-      setSelectedConfigurations(selectedConfigurations.filter(id => id !== configId));
-    } else {
-      setSelectedConfigurations([...selectedConfigurations, configId]);
-    }
+    setSelectedConfigurations(prevSelected => 
+      prevSelected.includes(configId)
+        ? prevSelected.filter(id => id !== configId)
+        : [...prevSelected, configId]
+    );
   };
 
   return (
@@ -116,7 +121,8 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
               <label>
                 <input
                   type="checkbox"
-                  checked={selectedConfigurations.includes(config.id)}
+                  value={config.id}
+                  checked={selectedConfigurations.includes(config.id)} // Mark as checked if included in selectedConfigurations
                   onChange={() => handleChangeConfiguration(config.id)}
                 />
                 {config.name}
