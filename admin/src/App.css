@@ -10,11 +10,12 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  margin: 2%;
+  /* margin: 2%; */
   /* overflow: hidden;  */
 }
 
 .content {
-  flex-grow: 1;
-  padding: 20px;
+  width: 100%;
+  /* flex-grow: 1; */
+  /* padding: 20px; */
 }

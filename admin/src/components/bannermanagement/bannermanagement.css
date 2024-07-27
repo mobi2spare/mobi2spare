@@ -1,8 +1,8 @@
 .banner-management {
-    width: calc(100% - 300px); /* Adjust based on sidebar width */
+    width: 100%; /* Adjust based on sidebar width */
     margin-top: 0px; /* Adjust based on your layout */
-    margin-left: 250px; /* Ensure there's proper spacing with the Sidenav */
-    padding: 20px;  
+    /* margin-left: 250px; Ensure there's proper spacing with the Sidenav */
+    /* padding: 20px;   */
     position: absolute; 
   }
   
@@ -29,6 +29,7 @@
   .banner-table {
     width: 100%;
     border-collapse: collapse;
+    overflow-x: auto;
     margin-top: 20px;
   }
   

@@ -8,12 +8,14 @@ import ApproveDeny from './components/approvedeny/approvedeny.jsx';
 import CategoryManagement from './components/categorymanagement/categorymanagement.jsx';
 import BrandManagement from './components/brandmanagement/brandmanagement.jsx';
 import ModelManagement from './components/modelmanagement/modelmanagement.jsx';
+import BannerManagement from './components/bannermanagement/bannermanagement.jsx';
+import UserManagement from './components/usermanagement/usermanagement.jsx';
 // import dotenv from 'dotenv';
 // dotenv.config();
 
 function App() {
 
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('Category Management');
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -32,6 +34,8 @@ function App() {
           {selectedOption === 'All Requests' && <RequestManagement />}
           {selectedOption === 'Request Management' && <ApproveDeny />}
           {selectedOption === 'Category Management' && <CategoryManagement />}
+          {selectedOption === 'Banner Management' && <BannerManagement />}
+          {selectedOption === 'User Management' && <UserManagement />}
           {selectedOption === 'Brand Management' && <BrandManagement />}
           {selectedOption === 'Model Management' && <ModelManagement />}
         </div>

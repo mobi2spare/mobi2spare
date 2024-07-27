@@ -91,7 +91,7 @@
 .menu-icon {
   width: 45px;
   margin-left: 25%;
-  display: none;
+  display: flex;
 }
 
 .close-icon {

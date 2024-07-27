@@ -3,8 +3,8 @@
   background-color: #ffffff;
   border-right: 1px solid #e9ecef;
   /* overflow-y: auto; */
-  display: flex;
-  position:absolute;
+  display: none;
+  position: absolute;
   padding: 10px;
 }
 
@@ -123,11 +123,10 @@
     display: none;
     width: 100%;
     height: auto;
-    position: relative;
+    /* position: relative; */
   }
 
   .sidebar li {
     float: left;
   }
 }
-

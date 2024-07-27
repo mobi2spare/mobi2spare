@@ -1,5 +1,3 @@
-
-
 body {
   margin: 0;
   padding: 0;
@@ -20,7 +18,8 @@ code {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* Full height of the viewport */
+  height: 100vh;
+  /* Full height of the viewport */
 }
 
 .big-button1 {

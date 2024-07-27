@@ -1,10 +1,10 @@
 /* src/components/usermanagement/usermanagement.css */
 .user-management {
-    width: calc(100% - 300px); /* Adjust based on sidebar width */
+    width: 100%; /* Adjust based on sidebar width */
     margin-top: 0px; /* Adjust based on your layout */
-    margin-left: 250px; /* Ensure there's proper spacing with the Sidenav */
-    padding: 20px;
-    position: absolute;
+    /* margin-left: 250px; Ensure there's proper spacing with the Sidenav */
+    /* padding: 20px; */
+    position: relative;
   }
   
   .header {
@@ -25,6 +25,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    overflow-x: auto
   }
   
   .user-table th,
