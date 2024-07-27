@@ -38,3 +38,24 @@ export const uploadCategoryImage = async (req, res) => {
     }
 
 }
+
+export const uploadbanner= async (req, res) => {
+
+    if (req.file) {
+         const uploadedFiles = req.files;
+        // const filename = req.file.filename;
+        const path = req.file.path;
+        console.log(path)
+        // const mimetype = req.file.mimetype;
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            path: {
+                'key': `${path}`
+            },
+            message: "Success, Image uploaded!",
+        });
+    } else {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'No file uploaded' });
+    }
+
+}

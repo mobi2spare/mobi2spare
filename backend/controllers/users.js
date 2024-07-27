@@ -32,13 +32,13 @@ export const signIn = async (req, res) => {
   const role = result.user_type;  // Get role from DB.
   const token = signJWT(userId, role);  // Send JWT token
   const refreshToken = signRefreshJWT(userId, role);
-  const cartid = await db.one('SELECT id FROM cart where buyer_id=$1',[userId]);
   // Successful login (send relevant user information or a token, for example)
   if(role==='Admin'){
-    res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken} }); // Replace with relevant user data
+    res.json({ message: 'Login successful!', user: { role:'Admin', id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken} }); // Replace with relevant user data
   }
   else{
-    res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken,cartId:cartid.id } }); // Replace with relevant user data
+    const cartid = await db.one('SELECT id FROM cart where buyer_id=$1',[userId]);
+    res.json({ message: 'Login successful!', user: { role:'GeneralUser', id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken,cartId:cartid.id } }); // Replace with relevant user data
   }
 
 };
@@ -100,9 +100,7 @@ export const signUp = async (req, res) => {
 
   const hashedPassword = await hashPassword(password);
   const userInsertResult = await db.one('INSERT INTO users (username,phone, password,user_type,organization_name,address) VALUES ($1, $2, $3,$4,$5,$6) RETURNING id', [fullName, phoneNumber, hashedPassword, role, organizationName, address]);
-  if (userInsertResult && role === 'Admin') {
-    // Additional logic specific to admin role
-    // For example, setting up admin-specific functionalities or permissions
+  if (userInsertResult && role === ROLES.Admin) {
     res.status(StatusCodes.CREATED).json({ id: userInsertResult.id,message: 'Admin created successfully!' });
   }
   if (userInsertResult && role === ROLES.GeneralUser) {
@@ -114,3 +112,34 @@ export const signUp = async (req, res) => {
 
 };
 
+export const getAll = async (req, res) => {
+  try {
+    const users = await db.any('SELECT id, username, organization_name, address FROM users WHERE user_type = $1', ['GeneralUser']);
+
+    res.status(StatusCodes.OK).json({ users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const editUser = async (req, res) => {
+  const userId = req.params.id;
+  const { address, organization_name } = req.body;
+
+  if (!address || !organization_name) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Missing address or organization name' });
+  }
+
+  try {
+    const result = await db.none(
+      'UPDATE users SET address = $1, organization_name = $2 WHERE id = $3',
+      [address, organization_name, userId]
+    );
+
+    res.status(StatusCodes.OK).json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};

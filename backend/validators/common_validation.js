@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import { validationResult } from "express-validator";
 import dotenv from 'dotenv';
 dotenv.config();
-
 const secret = process.env.JWT_SECRET ;
 
 export function verifyAndGetUserRoles(req, res, next) {
@@ -22,6 +21,7 @@ export function verifyAndGetUserRoles(req, res, next) {
         }
         req.userRoles = decodedAccessToken.role; // Store roles in request object
         req.userId = decodedAccessToken.userId; // Store user ID in request object
+        //console.log(req.userRoles);
         next();
     } catch (err) {
         return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid token' });
@@ -36,8 +36,12 @@ export function validateErrors(req, res, next) {
     next();
 }
 
-function isAdmin(user) {
+export function isAdmin(req,res,next) {
     // Replace this with your logic to check if the user is an admin
     // This could involve checking a user role in the database or a flag in the user object
-    return user.role === 'Admin';
+    //console.log(req.userRoles);
+    if(req.userRoles !== 'Admin'){
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Admin access denied!.' });
+    };
+    next();
 }
