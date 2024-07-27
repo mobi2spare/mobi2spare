@@ -144,3 +144,24 @@ export const editUser = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
   }
 };
+
+
+export const getUser = async (req, res) => {
+  const { id } = req.params; 
+
+  try {
+    const user = await db.oneOrNone(
+      'SELECT username, organization_name, address FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (user) {
+      res.status(StatusCodes.OK).json(user);
+    } else {
+      res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+};

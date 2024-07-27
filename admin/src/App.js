@@ -1,9 +1,6 @@
 // App.js
-// App.js
-// App.js
-import React, { useState,useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidenav from './components/sidenav/sidenav.jsx';
 import Adminav from './components/adminav/adminav.jsx';
 import RequestManagement from './components/requestview/requestview.jsx';
@@ -13,47 +10,51 @@ import BrandManagement from './components/brandmanagement/brandmanagement.jsx';
 import ModelManagement from './components/modelmanagement/modelmanagement.jsx';
 import BannerManagement from './components/bannermanagement/bannermanagement.jsx';
 import UserManagement from './components/usermanagement/usermanagement.jsx';
+
 const App = () => {
   const { option } = useParams();
-  const [selectedOption, setSelectedOption] = useState(option || '');
+  const [selectedOption, setSelectedOption] = useState(option || 'categorymanagement'); // Default to categorymanagement
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!option) {
-      navigate('/admin/dashboard/categorymanagement'); // Redirect to default route
-    } else {
+    // If the option changes, update the state and navigate to the new route
+    if (option && option !== selectedOption) {
       setSelectedOption(option.replace(/\s+/g, '').toLowerCase());
     }
-  }, [option, navigate]);
+  }, [option, selectedOption]);
 
- //console.log("l");
+  useEffect(() => {
+    // If the selectedOption changes, navigate to the new route
+    if (selectedOption) {
+      navigate(`/admin/dashboard/${selectedOption}`);
+    }
+  }, [selectedOption, navigate]);
+
   const handleOptionClick = (option) => {
-    setSelectedOption(option);
     const formattedOption = option.replace(/\s+/g, '').toLowerCase();
-    //console.log(formattedOption)
-    navigate(`/admin/dashboard/${formattedOption}`);
+    setSelectedOption(formattedOption);
   };
 
   const handleLogout = () => {
-    console.log('Logout clicked');
+    navigate('/admin/signin');
   };
 
   // Map option to component
   const renderComponent = () => {
     switch (selectedOption) {
-      case 'All Requests':
+      case 'allrequests':
         return <RequestManagement />;
-      case 'Request Management':
+      case 'requestmanagement':
         return <ApproveDeny />;
-      case 'Category Management':
+      case 'categorymanagement':
         return <CategoryManagement />;
-      case 'Brand Management':
+      case 'brandmanagement':
         return <BrandManagement />;
-      case 'Model Management':
+      case 'modelmanagement':
         return <ModelManagement />;
-      case 'Banner Management':
+      case 'bannermanagement':
         return <BannerManagement />;
-      case 'User Management':
+      case 'usermanagement':
         return <UserManagement />;
       default:
         return <CategoryManagement />;
@@ -65,8 +66,7 @@ const App = () => {
       <Adminav onLogout={handleLogout} username="Admin" />
       <div className="main-content">
         <Sidenav onOptionClick={handleOptionClick} />
-        
-          {renderComponent()}
+        {renderComponent()}
       </div>
     </div>
   );
