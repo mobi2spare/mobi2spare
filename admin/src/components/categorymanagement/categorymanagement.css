@@ -1,113 +1,126 @@
 .category-management {
-    width: calc(100% - 300px); /* Adjust based on sidebar width */
-    margin-top: 0px; /* Adjust based on your layout */
-    margin-left: 250px; /* Ensure there's proper spacing with the Sidenav */
-    padding: 20px;
-    position: absolute; 
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .add-category-btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #28a745; /* Green for Add button */
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .add-category-btn:hover {
-    background-color: #218838;
-  }
-  
-  .category-table {
+  width: 100%;
+  /* Adjust based on sidebar width */
+  /* Adjust based on your layout */
+  /* margin-left: 250px; */
+  /* Ensure there's proper spacing with the Sidenav */
+  /* padding: 20px; */
+  /* position: absolute;  */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.add-category-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: green;
+  /* Green for Add button */
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.add-category-btn:hover {
+  background-color: #218838;
+}
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.category-table th,
+.category-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.category-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.category-image {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+}
+
+.image-actions,
+.category-actions {
+  width: 150px;
+  /* Adjust width as needed */
+}
+
+.image-actions div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.category-table button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.category-table .edit-button {
+  background-color: #007bff;
+  /* Blue for Edit button */
+}
+
+.category-table .edit-button:hover {
+  background-color: #0056b3;
+}
+
+.category-table .delete-button {
+  background-color: #dc3545;
+  /* Red for Delete button */
+}
+
+.category-table .delete-button:hover {
+  background-color: #c82333;
+}
+
+.category-table .add-image-button {
+  background-color: #28a745;
+  /* Green for Image actions */
+}
+
+.category-table .add-image-button:hover {
+  background-color: #218838;
+}
+
+.category-table .delete-image-button {
+  background-color: #dc3545;
+}
+
+.category-table .delete-image-button:hover {
+  background-color: #c82333;
+}
+
+.category-table .update-image-button {
+  background-color: #007bff;
+}
+
+.category-table .update-image-button:hover {
+  background-color: #0056b3;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+@media (max-width:500px) {
+  .category-management {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    margin: 0;
   }
-  
-  .category-table th,
-  .category-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  .category-table th {
-    background-color: #f2f2f2;
-    text-align: left;
-  }
-  
-  .category-image {
-    max-width: 100px;
-    max-height: 100px;
-    object-fit: cover;
-  }
-  
-  .image-actions,
-  .category-actions {
-    width: 150px; /* Adjust width as needed */
-  }
-  
-  .image-actions div {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .category-table button {
-    margin-right: 5px;
-    padding: 5px 10px;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .category-table .edit-button {
-    background-color: #007bff; /* Blue for Edit button */
-  }
-  
-  .category-table .edit-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .category-table .delete-button {
-    background-color: #dc3545; /* Red for Delete button */
-  }
-  
-  .category-table .delete-button:hover {
-    background-color: #c82333;
-  }
-  
-  .category-table .add-image-button {
-    background-color: #28a745; /* Green for Image actions */
-  }
-  
-  .category-table .add-image-button:hover {
-    background-color: #218838;
-  }
-  
-  .category-table .delete-image-button {
-    background-color: #dc3545;
-  }
-  
-  .category-table .delete-image-button:hover {
-    background-color: #c82333;
-  }
-  
-  .category-table .update-image-button {
-    background-color: #007bff;
-  }
-  
-  .category-table .update-image-button:hover {
-    background-color: #0056b3;
-  }
-  
-  button:hover {
-    cursor: pointer;
-  }
-  
+}

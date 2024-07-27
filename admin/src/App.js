@@ -16,7 +16,7 @@ const App = () => {
   const { option } = useParams();
   const [selectedOption, setSelectedOption] = useState(option || '');
   const navigate = useNavigate();
- //console.log("l");
+  //console.log("l");
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     const formattedOption = option.replace(/\s+/g, '').toLowerCase();
@@ -52,8 +52,9 @@ const App = () => {
       <Adminav onLogout={handleLogout} username="Admin" />
       <div className="main-content">
         <Sidenav onOptionClick={handleOptionClick} />
-        
+        <div className="content">
           {renderComponent()}
+        </div>
       </div>
     </div>
   );

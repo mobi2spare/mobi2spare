@@ -1,9 +1,10 @@
 /* requestview.css */
 .request-management {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .search-bar {
@@ -18,7 +19,7 @@
   flex: 1;
   padding: 10px;
   font-size: 16px;
-  margin-right: 10px;
+  /* margin-right: 10px; */
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -46,7 +47,6 @@
 
 .requests {
   border: 1px solid #e9ecef;
-  padding: 20px;
   width: 100%;
   border-radius: 4px;
   background-color: #fff;
@@ -88,6 +88,5 @@
 
   .requests {
     width: 100%;
-    margin-bottom: 20px;
   }
 }

@@ -10,6 +10,17 @@ const Sidenav = ({ onOptionClick }) => {
     'Model Management'
   ];
 
+  function closeNav() {
+    const sidebar = document.querySelector('.sidebar')
+    sidebar.style.display = 'none'
+    const menu = document.querySelector('.menu-icon')
+    menu.style.display = 'flex'
+    const close = document.querySelector('.close-icon')
+    close.style.display = 'none'
+    const content = document.querySelector('.content')
+    content.style.display = 'flex'
+  }
+
   return (
     <div className="sidebar">
       <ul className="sidebar-list">
@@ -17,7 +28,7 @@ const Sidenav = ({ onOptionClick }) => {
           <li
             key={index}
             className="sidebar-item"
-            onClick={() => onOptionClick(option)}
+            onClick={() => { return onOptionClick(option), closeNav() }}
           >
             {option}
           </li>

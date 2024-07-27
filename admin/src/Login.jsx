@@ -20,6 +20,7 @@ const Login = () => {
       });
 
       const { id, role, token, refreshToken, phone, ...user } = response.data.user;
+      console.log(response.data.user);
 
       // Store user data in localStorage
       localStorage.setItem('user', JSON.stringify({
@@ -34,7 +35,7 @@ const Login = () => {
       // Store tokens in cookies
       Cookies.set('token', token, { expires: 7, secure: true });
       Cookies.set('refreshToken', refreshToken, { expires: 7, secure: true });
-  //console.log(role)
+      console.log(role)
       // Redirect to appropriate dashboard based on role
       if (role === 'Admin') {
         history('/admin/dashboard');

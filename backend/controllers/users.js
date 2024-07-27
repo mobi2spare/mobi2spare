@@ -32,13 +32,13 @@ export const signIn = async (req, res) => {
   const role = result.user_type;  // Get role from DB.
   const token = signJWT(userId, role);  // Send JWT token
   const refreshToken = signRefreshJWT(userId, role);
-  const cartid = await db.one('SELECT id FROM cart where buyer_id=$1',[userId]);
+  const cartid = await db.one('SELECT id FROM cart where buyer_id=$1', [userId]);
   // Successful login (send relevant user information or a token, for example)
-  if(role==='Admin'){
-    res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken} }); // Replace with relevant user data
+  if (role === 'Admin') {
+    res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken, role: role } }); // Replace with relevant user data   
   }
-  else{
-    res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken,cartId:cartid.id } }); // Replace with relevant user data
+  else {
+    res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken, cartId: cartid.id } }); // Replace with relevant user data
   }
 
 };
@@ -103,11 +103,11 @@ export const signUp = async (req, res) => {
   if (userInsertResult && role === 'Admin') {
     // Additional logic specific to admin role
     // For example, setting up admin-specific functionalities or permissions
-    res.status(StatusCodes.CREATED).json({ id: userInsertResult.id,message: 'Admin created successfully!' });
+    res.status(StatusCodes.CREATED).json({ id: userInsertResult.id, message: 'Admin created successfully!' });
   }
   if (userInsertResult && role === ROLES.GeneralUser) {
     const cartId = await db.one("INSERT INTO cart (buyer_id) VALUES($1) RETURNING Id", [userInsertResult.id])
-    res.status(StatusCodes.CREATED).json({ id: userInsertResult.id,cartId:cartId.id, message: 'User created successfully!' });
+    res.status(StatusCodes.CREATED).json({ id: userInsertResult.id, cartId: cartId.id, message: 'User created successfully!' });
 
 
   }

@@ -3,15 +3,18 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100%;
 }
 
 .main-content {
   display: flex;
-  flex: 1; /* Take remaining height */
-  overflow: hidden; /* Ensure no overflow */
+  flex-direction: row;
+  width: 100%;
+  margin: 2%;
+  /* overflow: hidden;  */
 }
 
 .content {
-  flex: 1; /* Take remaining width */
+  flex-grow: 1;
   padding: 20px;
 }

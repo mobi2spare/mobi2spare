@@ -1,14 +1,12 @@
 .temp-requests {
-  width: calc(100% - 300px); /* Adjust based on sidebar width */
-  margin-top: 65px; /* Adjust based on your layout */
-  margin-left: 250px; /* Ensure there's proper spacing with the Sidenav */
-  padding: 20px;
-  position: absolute; 
+  /* width: 100%; */
+  overflow-x: auto;
+  margin-top: 65px;
+  position: relative;
 }
 
-/* Ensure this button and popup are positioned relative to .temp-requests */
 .description-btn {
-  position: absolute;
+  width: max-content;
   top: -50px;
   right: 20px;
   padding: 10px 20px;
@@ -20,9 +18,10 @@
 }
 
 .description-popup {
-  position: absolute;
+  position: relative;
   top: -180px;
   right: 20px;
+  margin-left: 3%;
   background-color: white;
   border: 1px solid #ddd;
   padding: 10px;
@@ -31,13 +30,24 @@
   display: none;
 }
 
-.description-btn:hover + .description-popup,
+.description-btn:hover+.description-popup,
 .description-popup:hover {
   display: block;
 }
 
+.description-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.description-popup li {
+  margin-bottom: 5px;
+}
+
 .requests-table {
   width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   margin-top: 20px;
 }
