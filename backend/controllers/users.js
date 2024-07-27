@@ -32,7 +32,7 @@ export const signIn = async (req, res) => {
   const role = result.user_type;  // Get role from DB.
   const token = signJWT(userId, role);  // Send JWT token
   const refreshToken = signRefreshJWT(userId, role);
-  const cartid = await db.one('SELECT id FROM cart where buyer_id=$1',[userId]);
+  const cartid = await db.oneOrNone('SELECT id FROM cart where buyer_id=$1',[userId]);
   // Successful login (send relevant user information or a token, for example)
   if(role==='Admin'){
     res.json({ message: 'Login successful!', user: { id: userId, phone: result.phone, username: result.username, address: result.address, organization: result.organization_name, token: token, refreshToken: refreshToken} }); // Replace with relevant user data

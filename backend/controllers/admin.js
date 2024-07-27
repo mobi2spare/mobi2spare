@@ -2,19 +2,8 @@ import dotenv from 'dotenv';
 import { PRODUCT_REQUEST_STATUS } from "../constants/constants.js";
 import db from '../db/db.js';
 import { StatusCodes } from "http-status-codes";
-import pgPromise from 'pg-promise';
 
 dotenv.config();
-
-const pgp = pgPromise({});
-const DATABASE_USERNAME = process.env.DATABASE_USERNAME;
-const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
-const DATABASE_HOST = process.env.DATABASE_HOST;
-const DATABASE_PORT = process.env.DATABASE_PORT;
-const DATABASE_NAME = process.env.DATABASE_NAME ;
-
-const connectionString = `postgres://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
-const dbInstance = pgp(connectionString); // Renamed to avoid redeclaration
 
 export const approveTemporaryProductRequest = async (req, res) => {
     let { brand_id, category_id, quantity, description, price, seller_id, attribute_value_id, model_id, ram_storage_id, model_name, ram_storage_name } = req.body;
@@ -26,7 +15,7 @@ export const approveTemporaryProductRequest = async (req, res) => {
 
             let modelExists;
             if (model_name) {
-                modelExists = await t.oneOrNone("SELECT ID from model where model_name=$1 and brand_id = $2", [model_name, brand_id]);
+                modelExists = await t.oneOrNone("SELECT id from model where model_name=$1 and brand_id = $2", [model_name, brand_id]);
             }
 
             if (modelExists) {
@@ -125,37 +114,9 @@ export const getAllTempRequests = async (req, res) => {
     }
 };
 
-export const approveTemporaryProductRequest1 = async (req, res) => {
-    let { brand_id, category_id, quantity, description, price, seller_id, attribute_value_id, model_id, ram_storage_id, model_name, ram_storage_name } = req.body;
-    let requestId = req.params['id'];
-    console.log(req.params)
-    try {
-        const result = await dbInstance.tx(async t => {
-            await t.one("SELECT * from temporary_model_requests where request_id=$1 AND request_status = $2", [requestId, PRODUCT_REQUEST_STATUS.PENDING]);
 
-            console.log("k");
-            const insertProduct = await t.one('INSERT INTO product_requests (id,brand_id, category_id,description, buyer_id, model_id, ram_storage_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', [requestId,brand_id, category_id,description, seller_id, model_id, ram_storage_id]);
-            const productId = insertProduct.id;
-            console.log(insertProduct);
-            const now = new Date().toISOString();
-            await t.none('UPDATE temporary_model_requests SET admin_id=$1, admin_actioned_at=$2, request_status=$3 WHERE request_id = $4', [req.userId, now, PRODUCT_REQUEST_STATUS.APPROVED, requestId]);
-            return productId;
-        });
 
-        res.status(StatusCodes.CREATED).json({
-            success: true,
-            message: 'Listing created successfully!',
-            data: result,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: error.message
-        });
-    }
-};
-
-export const denyTemporaryProductRequest1 = async (req, res) => {
+export const denyTemporaryProductRequest = async (req, res) => {
     const requestId = req.params['id'];
     try {
         const result = await dbInstance.tx(async t => {
