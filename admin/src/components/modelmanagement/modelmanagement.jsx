@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './modelmanagement.css';
 import AddModelForm from '../addmodel/addmodel';
-import EditModelForm from '../editmodel/editmodel'; // New edit model form component
+import EditModelForm from '../editmodel/editmodel';
 import { getToken } from '../../tokenutility';
-import { FaSearch } from 'react-icons/fa'; // Import search icon
+import { FaSearch } from 'react-icons/fa';
 
 const ModelManagement = () => {
   const [models, setModels] = useState([]);
@@ -12,9 +12,9 @@ const ModelManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddModelForm, setShowAddModelForm] = useState(false);
-  const [showEditModelForm, setShowEditModelForm] = useState(false); // State to show edit form
-  const [editModelData, setEditModelData] = useState(null); // Data for edit model
-  const [searchTerm, setSearchTerm] = useState(''); // State for search term
+  const [showEditModelForm, setShowEditModelForm] = useState(false);
+  const [editModelData, setEditModelData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const token = getToken();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const ModelManagement = () => {
 
       if (response.data.success) {
         setModels(response.data.data);
-        setFilteredModels(response.data.data); // Set initial filtered models
+        setFilteredModels(response.data.data);
       } else {
         setError('Failed to fetch models');
       }
@@ -60,7 +60,14 @@ const ModelManagement = () => {
 
   const handleEditModel = (id) => {
     const selectedModel = models.find(model => model.id === id);
-    setEditModelData(selectedModel);
+
+    // Extract ram_storage_ids from configurations
+    const ram_storage_ids = selectedModel.configurations.map(config => config.ram_storage_id);
+
+    setEditModelData({
+      ...selectedModel,
+      ram_storage_ids // Pass ram_storage_ids to EditModelForm
+    });
     setShowEditModelForm(true);
   };
 
@@ -76,7 +83,7 @@ const ModelManagement = () => {
         });
 
         if (response.data.message === 'Model and associated RAM storage mappings deleted successfully!') {
-          await fetchModels(); // Refresh models after deletion
+          await fetchModels();
         } else {
           setError('Failed to delete model');
         }
@@ -91,19 +98,19 @@ const ModelManagement = () => {
   };
 
   const handleModelAdded = () => {
-    setShowAddModelForm(false); // Close the add model form
-    fetchModels(); // Refresh models after addition
+    setShowAddModelForm(false);
+    fetchModels();
   };
 
   const handleEditFormCancel = () => {
     setShowEditModelForm(false);
-    setEditModelData(null); // Clear edit model data
+    setEditModelData(null);
   };
 
   const handleModelUpdated = () => {
-    setShowEditModelForm(false); // Close edit form
-    setEditModelData(null); // Clear edit model data
-    fetchModels(); // Refresh models after update
+    setShowEditModelForm(false);
+    setEditModelData(null);
+    fetchModels();
   };
 
   const handleSearchChange = (event) => {
@@ -189,8 +196,7 @@ const ModelManagement = () => {
         <EditModelForm
           onCancel={handleEditFormCancel}
           onModelUpdated={handleModelUpdated}
-          model={editModelData}
-          token={token}
+          model={editModelData} // Pass model with ram_storage_ids to EditModelForm
         />
       )}
     </div>

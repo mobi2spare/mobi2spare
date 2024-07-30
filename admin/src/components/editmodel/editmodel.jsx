@@ -5,8 +5,8 @@ import { getToken } from '../../tokenutility';
 
 const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
   const [model_name, setModelName] = useState(model.model_name);
-  const [brand_name, setBrandName] = useState(model.brand_name); // For displaying the brand name
-  const [brand_id, setBrandId] = useState(model.brand_id); // For setting the brand in the form
+  const [brand_name, setBrandName] = useState(model.brand_name); 
+  const [brand_id, setBrandId] = useState(model.brand_id); 
   const [selectedConfigurations, setSelectedConfigurations] = useState(model.ram_storage_ids || []);
   const [brands, setBrands] = useState([]);
   const [configurations, setConfigurations] = useState([]);
@@ -16,6 +16,10 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
     fetchBrands();
     fetchConfigurations();
   }, []);
+
+  useEffect(() => {
+    console.log('Selected Configurations:', selectedConfigurations);
+  }, [selectedConfigurations]);
 
   const fetchBrands = async () => {
     try {
@@ -59,7 +63,7 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
       });
 
       if (response.data.message === 'Model updated successfully!') {
-        onModelUpdated(); // Trigger the parent component to refresh data
+        onModelUpdated(); 
       } else {
         console.error('Failed to update model');
       }
@@ -70,11 +74,11 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
 
   const handleChangeConfiguration = (configId) => {
     // Toggle selection of configuration ID
-    if (selectedConfigurations.includes(configId)) {
-      setSelectedConfigurations(selectedConfigurations.filter(id => id !== configId));
-    } else {
-      setSelectedConfigurations([...selectedConfigurations, configId]);
-    }
+    setSelectedConfigurations(prevSelected => 
+      prevSelected.includes(configId)
+        ? prevSelected.filter(id => id !== configId)
+        : [...prevSelected, configId]
+    );
   };
 
   return (
@@ -96,11 +100,10 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
           <select
             value={brand_id}
             onChange={(e) => setBrandId(e.target.value)}
-            required
           >
             <option value="">{brand_name}</option>
             {brands
-              .filter(brand => brand.name !== brand_name) // Exclude the current brand from options
+              .filter(brand => brand.name !== brand_name) 
               .map((brand) => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
@@ -116,7 +119,8 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
               <label>
                 <input
                   type="checkbox"
-                  checked={selectedConfigurations.includes(config.id)}
+                  value={config.id}
+                  checked={selectedConfigurations.includes(config.id)} 
                   onChange={() => handleChangeConfiguration(config.id)}
                 />
                 {config.name}
