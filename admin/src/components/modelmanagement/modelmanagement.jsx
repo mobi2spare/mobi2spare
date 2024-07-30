@@ -1,10 +1,11 @@
+// src/components/modelmanagement/ModelManagement.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './modelmanagement.css';
-import AddModelForm from '../addmodel/addmodel';
-import EditModelForm from '../editmodel/editmodel';
-import { getToken } from '../../tokenutility';
-import { FaSearch } from 'react-icons/fa';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
+import './modelmanagement.css'; // Import your CSS file
+import AddModelForm from '../addmodel/addmodel'; // Import your AddModelForm component
+import EditModelForm from '../editmodel/editmodel'; // Import your EditModelForm component
+import { FaSearch } from 'react-icons/fa'; // Import search icon
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const ModelManagement = () => {
   const [models, setModels] = useState([]);
@@ -15,7 +16,6 @@ const ModelManagement = () => {
   const [showEditModelForm, setShowEditModelForm] = useState(false);
   const [editModelData, setEditModelData] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const token = getToken();
 
   useEffect(() => {
     fetchModels();
@@ -26,13 +26,11 @@ const ModelManagement = () => {
   }, [searchTerm, models]);
 
   const fetchModels = async () => {
-    try {
-      const response = await axios.get('http://localhost:8800/api/models/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+    setLoading(true);
+    setError(null);
 
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MODELS);
       if (response.data.success) {
         setModels(response.data.data);
         setFilteredModels(response.data.data);
@@ -61,27 +59,24 @@ const ModelManagement = () => {
   const handleEditModel = (id) => {
     const selectedModel = models.find(model => model.id === id);
 
-    // Extract ram_storage_ids from configurations
-    const ram_storage_ids = selectedModel.configurations.map(config => config.ram_storage_id);
+    if (selectedModel) {
+      const ram_storage_ids = selectedModel.configurations
+        ? selectedModel.configurations.map(config => config.ram_storage_id)
+        : [];
 
-    setEditModelData({
-      ...selectedModel,
-      ram_storage_ids // Pass ram_storage_ids to EditModelForm
-    });
-    setShowEditModelForm(true);
+      setEditModelData({
+        ...selectedModel,
+        ram_storage_ids
+      });
+      setShowEditModelForm(true);
+    }
   };
 
   const handleDeleteModel = async (id) => {
     const confirmed = window.confirm('Are you sure you want to delete this model?');
     if (confirmed) {
       try {
-        const response = await axios.delete(`http://localhost:8800/api/models/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
+        const response = await axiosInstance.delete(`${API_ENDPOINTS.MODELS}/${id}`);
         if (response.data.message === 'Model and associated RAM storage mappings deleted successfully!') {
           await fetchModels();
         } else {
@@ -122,7 +117,7 @@ const ModelManagement = () => {
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="error-message">{error}</p>;
   }
 
   return (
@@ -164,15 +159,19 @@ const ModelManagement = () => {
                   <td>{model.brand_name}</td>
                   <td>
                     <ul>
-                      {model.configurations.map((config, index) => (
-                        <li key={index}>
-                          {config.configuration && (
-                            <span>
-                              {config.configuration}
-                            </span>
-                          )}
-                        </li>
-                      ))}
+                      {model.configurations && model.configurations.length > 0 ? (
+                        model.configurations.map((config, index) => (
+                          <li key={index}>
+                            {config.configuration ? (
+                              <span>{config.configuration}</span>
+                            ) : (
+                              <span>No Configuration</span>
+                            )}
+                          </li>
+                        ))
+                      ) : (
+                        <li>No Configurations</li>
+                      )}
                     </ul>
                   </td>
                   <td>
@@ -196,7 +195,7 @@ const ModelManagement = () => {
         <EditModelForm
           onCancel={handleEditFormCancel}
           onModelUpdated={handleModelUpdated}
-          model={editModelData} // Pass model with ram_storage_ids to EditModelForm
+          model={editModelData}
         />
       )}
     </div>

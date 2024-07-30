@@ -1,23 +1,19 @@
+// src/components/approvedeny/TempRequestsTable.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './approvedeny.css';
-import Cookies from 'js-cookie';
-import { getToken } from '../../tokenutility';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const TempRequestsTable = () => {
   const [tempRequests, setTempRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-const token = getToken();
+
   useEffect(() => {
     const fetchTempRequests = async () => {
-      try {// Ensure this token is valid and not expired
-        const response = await axios.get('http://localhost:8800/api/admin/getempreq', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+      try {
+        const response = await axiosInstance.get(API_ENDPOINTS.GET_EMP_REQ);
 
         if (response.data.success) {
           const sortedData = response.data.data.sort((a, b) => {
@@ -26,33 +22,19 @@ const token = getToken();
           });
 
           const requestsWithNames = await Promise.all(sortedData.map(async (request) => {
-            const brandResponse = await axios.get(`http://localhost:8800/api/brands/${request.brand_id}`, {
-              headers: {
-                'Authorization': `Bearer ${token}`
-              }
-            });
-            const categoryResponse = await axios.get(`http://localhost:8800/api/category/${request.category_id}`, {
-              headers: {
-                'Authorization': `Bearer ${token}`
-              }
-            });
-           
-            const attributeResponse = await axios.get(` http://localhost:8800/api/attribute/getvalue/${request.attribute_value_id}`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-              });
-              const BuyerResponse = await axios.get(` http://localhost:8800/api/users/${request.seller_id}`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-              });
+            const [brandResponse, categoryResponse, attributeResponse, buyerResponse] = await Promise.all([
+              axiosInstance.get(`${API_ENDPOINTS.BRANDS}${request.brand_id}`),
+              axiosInstance.get(`${API_ENDPOINTS.CATEGORY}${request.category_id}`),
+              axiosInstance.get(`/attribute/getvalue/${request.attribute_value_id}`), // Endpoint seems specific
+              axiosInstance.get(`${API_ENDPOINTS.USERS}${request.seller_id}`)
+            ]);
+
             return {
               ...request,
               brand_name: brandResponse.data.data.name || 'Unknown Brand',
               category_name: categoryResponse.data.data[0].name || 'Unknown Category',
-              attribute_value:attributeResponse.data.data.value,
-              buyer_name:BuyerResponse.data.username 
+              attribute_value: attributeResponse.data.data.value || 'Unknown Attribute',
+              buyer_name: buyerResponse.data.username || 'Unknown Buyer'
             };
           }));
 
@@ -79,7 +61,7 @@ const token = getToken();
   };
 
   const handleApprove = async (request) => {
-    try { // Ensure this token is valid and not expired
+    try {
       const model_name = request.model_id ? '' : request.model_name;
       const ram_storage_name = request.ram_storage_id ? '' : request.ram_storage_config;
 
@@ -93,7 +75,7 @@ const token = getToken();
         return;
       }
 
-      const response = await axios.post(`http://localhost:8800/api/admin/products/approve/${request.request_id}`, {
+      const response = await axiosInstance.post(`${API_ENDPOINTS.APPROVE_PRODUCT}${request.request_id}`, {
         brand_id: request.brand_id,
         category_id: request.category_id,
         quantity: request.quantity,
@@ -105,10 +87,6 @@ const token = getToken();
         ram_storage_id: request.ram_storage_id,
         model_name: model_name,
         ram_storage_name: ram_storage_name
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       });
 
       if (response.data.success) {
@@ -126,12 +104,8 @@ const token = getToken();
   };
 
   const handleDeny = async (request) => {
-    try {// Ensure this token is valid and not expired
-      const response = await axios.post(`http://localhost:8800/api/admin/products/deny/${request.request_id}`, {}, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+    try {
+      const response = await axiosInstance.post(`${API_ENDPOINTS.DENY_PRODUCT}${request.request_id}`);
 
       if (response.data.success) {
         setTempRequests(prevRequests =>
@@ -193,7 +167,7 @@ const token = getToken();
             <th>MN</th>
             <th>RSC</th>
             <th>Request Status</th>
-            <th>Att Value </th>
+            <th>Att Value</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -210,7 +184,7 @@ const token = getToken();
               <td>{request.model_name || 'null'}</td>
               <td>{request.ram_storage_config || 'null'}</td>
               <td>{request.request_status || 'null'}</td>
-              <td>{request.attribute_value}</td>
+              <td>{request.attribute_value || 'null'}</td>
               <td className="action-buttons">
                 {request.request_status === 'Pending' ? (
                   <div className="pending-buttons">

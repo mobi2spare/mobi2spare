@@ -1,9 +1,8 @@
-// src/components/usermanagement/UserManagement.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import your configured Axios instance
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 import EditUser from '../edituser/edituser.jsx'; // Import your EditUser component
 import './usermanagement.css'; // Import your CSS file
-import { getToken } from '../../tokenutility'; // Import getToken utility function
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -14,7 +13,6 @@ const UserManagement = () => {
   const [editUserId, setEditUserId] = useState(null);
   const [editUserAddress, setEditUserAddress] = useState('');
   const [editUserOrganization, setEditUserOrganization] = useState('');
-  const token = getToken();
 
   useEffect(() => {
     fetchUsers();
@@ -25,12 +23,7 @@ const UserManagement = () => {
     setError(null);
 
     try {
-      const response = await axios.get('http://localhost:8800/api/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
+      const response = await axiosInstance.get(API_ENDPOINTS.USERS); // Use the constants for endpoints
       if (response.data) {
         setUsers(response.data.users);
       } else {

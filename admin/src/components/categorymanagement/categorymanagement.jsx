@@ -1,11 +1,12 @@
+// src/components/categorymanagement/CategoryManagement.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './categorymanagement.css';
 import AddCategory from '../addcategory/addcategory.jsx';
 import EditCategory from '../editcategory/editcategory.jsx';
 import AddImageCategory from '../addimagecategory/addimagecategory.jsx';
 import UpdateImageCategory from '../updateimagecategory/updateimagecategory.jsx';
-import { getToken } from '../../tokenutility';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 import { useNavigate } from 'react-router-dom';
 
 const CategoryManagement = () => {
@@ -20,7 +21,6 @@ const CategoryManagement = () => {
   const [showUpdateImageCategory, setShowUpdateImageCategory] = useState(false);
   const [imageCategoryId, setImageCategoryId] = useState(null);
   const [newCategoryId, setNewCategoryId] = useState(null);
-  const token = getToken();
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
@@ -29,11 +29,7 @@ const CategoryManagement = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/category', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await axiosInstance.get(API_ENDPOINTS.CATEGORY); // Use the endpoint from constants
 
       if (response.data.success) {
         setCategories(response.data.data);
@@ -41,11 +37,7 @@ const CategoryManagement = () => {
         setError('Failed to fetch categories');
       }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setError('Unauthorized request. Please check your token.');
-      } else {
-        setError('Error fetching categories: ' + error.message);
-      }
+      setError('Error fetching categories: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -62,13 +54,7 @@ const CategoryManagement = () => {
 
     if (confirmed) {
       try {
-
-        const response = await axios.delete(`http://localhost:8800/api/category/${categoryId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await axiosInstance.delete(`${API_ENDPOINTS.CATEGORY}${categoryId}`); // Use the endpoint from constants
 
         if (response.data.success) {
           await fetchCategories();
@@ -82,12 +68,12 @@ const CategoryManagement = () => {
   };
 
   const handleAddCategory = () => {
-    setShowAddCategory(true);// Navigate to addcategory within the current categorymanagement
+    setShowAddCategory(true);
   };
 
   const handleAddImage = (categoryId) => {
     setImageCategoryId(categoryId);
-    setShowAddImageCategory(true); // Navigate to addimage within the current categorymanagement
+    setShowAddImageCategory(true);
   };
 
   const handleDeleteImage = async (categoryId) => {
@@ -95,13 +81,7 @@ const CategoryManagement = () => {
 
     if (confirmed) {
       try {
-
-        const response = await axios.delete(`http://localhost:8800/api/category/image/${categoryId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await axiosInstance.delete(`${API_ENDPOINTS.CATEGORY_IMAGE}${categoryId}`); // Use the endpoint from constants
 
         if (response.data.message === 'Image deleted successfully!') {
           await fetchCategories();
@@ -116,28 +96,28 @@ const CategoryManagement = () => {
 
   const handleUpdateImage = (categoryId) => {
     setImageCategoryId(categoryId);
-    setShowUpdateImageCategory(true);// Navigate to editimage within the current categorymanagement
+    setShowUpdateImageCategory(true);
   };
 
   const handleCategoryAdded = async (categoryId) => {
     await fetchCategories();
     setShowAddCategory(false);
-    setNewCategoryId(categoryId);// Navigate back to the main categorymanagement view
+    setNewCategoryId(categoryId);
   };
 
   const handleCategoryUpdated = async () => {
     await fetchCategories();
-    setShowEditCategory(false);// Navigate back to the main categorymanagement view
+    setShowEditCategory(false);
   };
 
   const handleImageAdded = async () => {
     await fetchCategories();
-    setShowAddImageCategory(false);// Navigate back to the main categorymanagement view
+    setShowAddImageCategory(false);
   };
 
   const handleImageUpdated = async () => {
     await fetchCategories();
-    setShowUpdateImageCategory(false);// Navigate back to the main categorymanagement view
+    setShowUpdateImageCategory(false);
   };
 
   if (loading) {

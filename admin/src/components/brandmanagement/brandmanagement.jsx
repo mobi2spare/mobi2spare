@@ -1,9 +1,10 @@
+// src/components/brandmanagement/BrandManagement.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './brandmanagement.css'; 
 import AddBrand from '../addbrand/addbrand.jsx';
 import EditBrand from '../editbrand/editbrand.jsx';
-import { getToken } from '../../tokenutility';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
@@ -13,18 +14,14 @@ const BrandManagement = () => {
   const [showEditBrand, setShowEditBrand] = useState(false);
   const [editBrandId, setEditBrandId] = useState(null);
   const [editBrandName, setEditBrandName] = useState('');
-  const token=getToken();
+
   useEffect(() => {
     fetchBrands();
-  }, [showAddBrand, showEditBrand]); 
+  }, [showAddBrand, showEditBrand]);
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/brands/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await axiosInstance.get(API_ENDPOINTS.BRANDS);
       if (response.data.success) {
         setBrands(response.data.data);
       } else {
@@ -40,12 +37,8 @@ const BrandManagement = () => {
   const handleDeleteBrand = async (id) => {
     const confirmed = window.confirm('Are you sure you want to delete this brand?');
     if (confirmed) {
-      try {// Ensure this token is valid and not expired
-        const response = await axios.delete(`http://localhost:8800/api/brands/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+      try {
+        const response = await axiosInstance.delete(`${API_ENDPOINTS.BRANDS}${id}`);
         if (response.data.success) {
           await fetchBrands();
           alert('Brand deleted successfully!');
@@ -120,12 +113,20 @@ const BrandManagement = () => {
           {brands.map(brand => (
             <tr key={brand.id}>
               <td>{brand.id}</td>
-              <td>{brand.name}</td>
+              <td>{brand.name || 'N/A'}</td>
               <td>
                 <ul>
-                  {brand.models.map(model => (
-                    <li key={model && model.id}>{ model && model.model_name}</li>
-                  ))}
+                  {brand.models && brand.models.length > 0 ? (
+                    brand.models.map(model => (
+                      model && model.model_name ? (
+                        <li key={model.id}>{model.model_name}</li>
+                      ) : (
+                        <li key={Math.random()}>Unknown Model</li> // Provide a fallback if `model_name` is missing
+                      )
+                    ))
+                  ) : (
+                    <li>No models</li>
+                  )}
                 </ul>
               </td>
               <td>

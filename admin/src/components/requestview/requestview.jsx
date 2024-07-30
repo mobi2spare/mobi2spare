@@ -1,18 +1,21 @@
+// src/components/requestview/RequestView.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './requestview.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 import { getToken } from '../../tokenutility';
 
 const RequestView = () => {
   const [buyerId, setBuyerId] = useState('');
   const [requests, setRequests] = useState({ myRequests: [], otherRequests: [] });
   const [error, setError] = useState('');
+
   const fetchRequests = async (id) => {
     try {
-      const token=getToken();
-      const response = await axios.get(`http://localhost:8800/api/requests/${id}`, {
+      const token = getToken();
+      const response = await axiosInstance.get(`${API_ENDPOINTS.REQUESTS}/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -1,23 +1,18 @@
+// src/components/editcategory/EditCategory.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './editcategory.css';
-import { getToken } from '../../tokenutility';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const EditCategory = ({ categoryId, categoryName, onBack, onCategoryUpdated }) => {
   const [name, setName] = useState(categoryName);
   const [message, setMessage] = useState(null);
-  const token=getToken();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:8800/api/category/${categoryId}`, { name }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await axiosInstance.put(`${API_ENDPOINTS.CATEGORY}${categoryId}`, { name }); // Use the endpoint from constants
 
       if (response.data.success) {
         setMessage('Category updated successfully!');
@@ -48,7 +43,7 @@ const EditCategory = ({ categoryId, categoryName, onBack, onCategoryUpdated }) =
           />
         </label>
         <div className="button-container">
-          <button className="back-button" onClick={onBack}>Back</button>
+          <button className="back-button" type="button" onClick={onBack}>Back</button>
           <button className="submit-button" type="submit">Submit</button>
         </div>
       </form>

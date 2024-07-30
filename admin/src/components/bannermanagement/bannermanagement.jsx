@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 import './bannermanagement.css'; // Import your CSS file
 import AddBanner from '../addbanner/addbanner.jsx'; // Import your AddBanner component
 import EditBanner from '../editbanner/editbanner.jsx'; // Import your EditBanner component
-import { getToken } from '../../tokenutility'; // Import getToken utility function
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const BannerManagement = () => {
   const [banners, setBanners] = useState([]);
@@ -16,8 +15,6 @@ const BannerManagement = () => {
   const [editBannerTitle, setEditBannerTitle] = useState('');
   const [editBannerDescription, setEditBannerDescription] = useState('');
   const [editBannerUrl, setEditBannerUrl] = useState('');
-  const token = getToken();
-  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     fetchBanners();
@@ -28,12 +25,7 @@ const BannerManagement = () => {
     setError(null);
 
     try {
-      const response = await axios.get('http://localhost:8800/api/banners', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
+      const response = await axiosInstance.get(API_ENDPOINTS.BANNERS); // Use constant here
       if (response.data.success) {
         setBanners(response.data.data);
       } else {
@@ -57,13 +49,7 @@ const BannerManagement = () => {
   const handleDeleteBanner = async (bannerId) => {
     if (window.confirm('Are you sure you want to delete this banner?')) {
       try {
-        const response = await axios.delete(`http://localhost:8800/api/banners/${bannerId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
+        const response = await axiosInstance.delete(`${API_ENDPOINTS.BANNERS}/${bannerId}`); // Use constant here
         if (response.data.success) {
           fetchBanners();
         } else {
@@ -107,9 +93,9 @@ const BannerManagement = () => {
   if (showEditBanner) {
     return <EditBanner
       bannerId={editBannerId}
-      title={editBannerTitle}
-      description={editBannerDescription}
-      url={editBannerUrl}
+      bannerTitle={editBannerTitle}
+      bannerUrl={editBannerUrl}
+      bannerDescription={editBannerDescription}
       onBack={() => setShowEditBanner(false)}
       onBannerUpdated={handleBannerUpdated}
     />;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './addmodel.css';
-import { getToken } from '../../tokenutility';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
+import './addmodel.css'; // Import your CSS file
 
 const AddModelForm = ({ onCancel, onModelAdded }) => {
   const [model_name, setModelName] = useState('');
@@ -9,11 +9,9 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
   const [selectedConfigurations, setSelectedConfigurations] = useState([]);
   const [brands, setBrands] = useState([]);
   const [configurations, setConfigurations] = useState([]);
-  //const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
-  const token=getToken();
 
   useEffect(() => {
     fetchBrands();
@@ -22,12 +20,12 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/brands/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setBrands(response.data.data);
+      const response = await axiosInstance.get(API_ENDPOINTS.BRANDS);
+      if (response.data.success) {
+        setBrands(response.data.data);
+      } else {
+        throw new Error('Failed to fetch brands');
+      }
     } catch (error) {
       console.error('Error fetching brands:', error.message);
       setError('Failed to fetch brands');
@@ -36,12 +34,12 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
 
   const fetchConfigurations = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/phoneconfig/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setConfigurations(response.data.data);
+      const response = await axiosInstance.get(API_ENDPOINTS.PHONE_CONFIG); // Use constant here
+      if (response.data.success) {
+        setConfigurations(response.data.data);
+      } else {
+        throw new Error('Failed to fetch configurations');
+      }
     } catch (error) {
       console.error('Error fetching configurations:', error.message);
       setError('Failed to fetch configurations');
@@ -52,36 +50,30 @@ const AddModelForm = ({ onCancel, onModelAdded }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8800/api/models/', {
+      const response = await axiosInstance.post(API_ENDPOINTS.MODELS, { // Use constant here
         model_name,
         brand_id,
         ram_storage_ids: selectedConfigurations
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
       });
       if (response.data.message === 'Model created successfully!') {
         setShowSuccessPopup(true);
         onModelAdded(); // Trigger the parent component to refresh data
       } else {
-        setError('Failed to add model');
-        setShowErrorPopup(true);
+        throw new Error('Failed to add model');
       }
     } catch (error) {
+      console.error('Error adding model:', error.message);
       setError('Error adding model');
       setShowErrorPopup(true);
     }
   };
 
   const handleChangeConfiguration = (configId) => {
-    // Toggle selection of configuration ID
-    if (selectedConfigurations.includes(configId)) {
-      setSelectedConfigurations(selectedConfigurations.filter(id => id !== configId));
-    } else {
-      setSelectedConfigurations([...selectedConfigurations, configId]);
-    }
+    setSelectedConfigurations(prevSelected =>
+      prevSelected.includes(configId)
+        ? prevSelected.filter(id => id !== configId)
+        : [...prevSelected, configId]
+    );
   };
 
   return (

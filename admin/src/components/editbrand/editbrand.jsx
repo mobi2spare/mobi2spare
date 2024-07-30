@@ -1,18 +1,22 @@
+// src/components/editbrand/EditBrand.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { getToken } from '../../tokenutility';
+import './editbrand.css'; // Assuming you have CSS for styling
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const EditBrand = ({ brandId, brandName, onBack, onBrandUpdated }) => {
   const [name, setName] = useState(brandName);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const token=getToken();
+  const token = getToken(); // Retrieve the token from a utility function
 
   const handleUpdateBrand = async () => {
     setLoading(true);
-    try { // Ensure this token is valid and not expired
+    setError(null); // Clear any previous errors
+    try {
       const response = await axios.put(
-        `http://localhost:8800/api/brands/${brandId}`,
+        `${API_ENDPOINTS.BRANDS}${brandId}`, // Updated API endpoint
         { name },
         {
           headers: {
@@ -22,15 +26,15 @@ const EditBrand = ({ brandId, brandName, onBack, onBrandUpdated }) => {
         }
       );
       if (response.data.success) {
-        onBrandUpdated();
-        alert(response.data.message);
+        onBrandUpdated(); // Notify parent component about the update
+        alert(response.data.message); // Notify the user about success
       } else {
-        setError('Failed to update brand');
+        setError('Failed to update brand'); // Show error if update fails
       }
     } catch (error) {
-      setError('Error updating brand: ' + error.message);
+      setError('Error updating brand: ' + error.message); // Handle unexpected errors
     } finally {
-      setLoading(false);
+      setLoading(false); // Always stop loading indicator
     }
   };
 
@@ -48,9 +52,11 @@ const EditBrand = ({ brandId, brandName, onBack, onBrandUpdated }) => {
         />
         <div className="button-group">
           <button type="button" onClick={onBack}>Back</button>
-          <button type="submit" disabled={loading}>{loading ? 'Updating...' : 'Update Brand'}</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Updating...' : 'Update Brand'}
+          </button>
         </div>
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message">{error}</p>} {/* Display any error messages */}
       </form>
     </div>
   );

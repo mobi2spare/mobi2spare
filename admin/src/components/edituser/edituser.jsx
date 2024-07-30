@@ -1,29 +1,22 @@
-// src/components/edituser/EditUser.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import your configured Axios instance
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 import './edituser.css'; // Import your CSS file
-import { getToken } from '../../tokenutility';
 
 const EditUser = ({ userId, address, organizationName, onBack, onUserUpdated }) => {
   const [newAddress, setNewAddress] = useState(address);
   const [newOrganizationName, setNewOrganizationName] = useState(organizationName);
   const [message, setMessage] = useState(null);
-  const token = getToken();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:8800/api/users/${userId}`, {
+      const response = await axiosInstance.put(`${API_ENDPOINTS.USERS}/${userId}`, {
         address: newAddress,
         organization_name: newOrganizationName
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
       });
 
-      if (response.data.message==='User updated successfully') {
+      if (response.data.message === 'User updated successfully') {
         setMessage('User updated successfully!');
         onUserUpdated();
       } else {
@@ -57,7 +50,7 @@ const EditUser = ({ userId, address, organizationName, onBack, onUserUpdated }) 
           />
         </label>
         <div className="button-container">
-          <button className="back-button" onClick={onBack}>Back</button>
+          <button className="back-button" type="button" onClick={onBack}>Back</button>
           <button className="submit-button" type="submit">Submit</button>
         </div>
       </form>

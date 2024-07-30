@@ -1,12 +1,12 @@
+// src/components/updateimagecategory/UpdateImageCategory.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
-import './updateimagecategory.css'; // Create this CSS file for styling
-import { getToken } from '../../tokenutility';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
+import './updateimagecategory.css'; // Make sure to create this CSS file for styling
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const UpdateImageCategory = ({ categoryId, onBack, onImageUpdated }) => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
-  const token=getToken();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -24,23 +24,24 @@ const UpdateImageCategory = ({ categoryId, onBack, onImageUpdated }) => {
     formData.append('file', file);
 
     try {
-      const uploadResponse = await axios.post(`http://localhost:8800/api/category/upload/${categoryId}`, formData, {
+      // Upload the image
+      const uploadResponse = await axiosInstance.post(`${API_ENDPOINTS.CATEGORY_UPLOAD}${categoryId}`, formData, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
 
       if (uploadResponse.data.success) {
         const imagePath = uploadResponse.data.path.key;
-        const putResponse = await axios.put(`http://localhost:8800/api/category/image/${categoryId}`, { imagePath }, {
+        
+        // Update the category image
+        const putResponse = await axiosInstance.put(`${API_ENDPOINTS.CATEGORY_IMAGE}${categoryId}`, { imagePath }, {
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        if (putResponse.data.message==='Category image updated successfully!') {
+        if (putResponse.data.message === 'Category image updated successfully!') {
           setMessage('Image updated successfully!');
           onImageUpdated();
         } else {

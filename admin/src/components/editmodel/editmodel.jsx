@@ -1,49 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './editmodel.css';
-import { getToken } from '../../tokenutility';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
+import './editmodel.css'; // Import your CSS file
 
 const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
-  const [model_name, setModelName] = useState(model.model_name);
-  const [brand_name, setBrandName] = useState(model.brand_name); 
-  const [brand_id, setBrandId] = useState(model.brand_id); 
+  const [model_name, setModelName] = useState(model.model_name || '');
+  const [brand_name, setBrandName] = useState(model.brand_name);
+  const [brand_id, setBrandId] = useState(model.brand_id || '');
   const [selectedConfigurations, setSelectedConfigurations] = useState(model.ram_storage_ids || []);
   const [brands, setBrands] = useState([]);
   const [configurations, setConfigurations] = useState([]);
-  const token = getToken();
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchBrands();
     fetchConfigurations();
   }, []);
 
-  useEffect(() => {
-    console.log('Selected Configurations:', selectedConfigurations);
-  }, [selectedConfigurations]);
-
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/brands/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setBrands(response.data.data);
+      const response = await axiosInstance.get(API_ENDPOINTS.BRANDS); // Use constant here
+      if (response.data.success) {
+        setBrands(response.data.data);
+      } else {
+        throw new Error('Failed to fetch brands');
+      }
     } catch (error) {
       console.error('Error fetching brands:', error.message);
+      setError('Failed to fetch brands');
     }
   };
 
   const fetchConfigurations = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/phoneconfig/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setConfigurations(response.data.data);
+      const response = await axiosInstance.get(API_ENDPOINTS.PHONE_CONFIG); // Use constant here
+      if (response.data.success) {
+        setConfigurations(response.data.data);
+      } else {
+        throw new Error('Failed to fetch configurations');
+      }
     } catch (error) {
       console.error('Error fetching configurations:', error.message);
+      setError('Failed to fetch configurations');
     }
   };
 
@@ -51,30 +50,26 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:8800/api/models/${model.id}`, {
+      const response = await axiosInstance.put(`${API_ENDPOINTS.MODELS}/${model.id}`, { // Use constants here
         model_name,
         brand_id,
         ram_storage_ids: selectedConfigurations
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
       });
 
       if (response.data.message === 'Model updated successfully!') {
+        setSuccess('Model updated successfully!');
         onModelUpdated(); 
       } else {
-        console.error('Failed to update model');
+        throw new Error('Failed to update model');
       }
     } catch (error) {
-      console.error('Error updating model:', error);
+      console.error('Error updating model:', error.message);
+      setError('Error updating model');
     }
   };
 
   const handleChangeConfiguration = (configId) => {
-    // Toggle selection of configuration ID
-    setSelectedConfigurations(prevSelected => 
+    setSelectedConfigurations(prevSelected =>
       prevSelected.includes(configId)
         ? prevSelected.filter(id => id !== configId)
         : [...prevSelected, configId]
@@ -100,10 +95,11 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
           <select
             value={brand_id}
             onChange={(e) => setBrandId(e.target.value)}
+            required
           >
             <option value="">{brand_name}</option>
             {brands
-              .filter(brand => brand.name !== brand_name) 
+              .filter(brand => brand.id !== brand_id) // Prevent showing the current brand as an option
               .map((brand) => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
@@ -120,7 +116,7 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
                 <input
                   type="checkbox"
                   value={config.id}
-                  checked={selectedConfigurations.includes(config.id)} 
+                  checked={selectedConfigurations.includes(config.id)}
                   onChange={() => handleChangeConfiguration(config.id)}
                 />
                 {config.name}
@@ -132,6 +128,8 @@ const EditModelForm = ({ onCancel, onModelUpdated, model }) => {
         <button type="submit">Submit</button>
         <button type="button" onClick={onCancel}>Back</button>
       </form>
+      {error && <p className="error-message">{error}</p>}
+      {success && <p className="success-message">{success}</p>}
     </div>
   );
 };

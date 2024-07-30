@@ -1,28 +1,19 @@
+// src/components/addbrand/AddBrand.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './addbrand.css';
-import { getToken } from '../../tokenutility';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const AddBrand = ({ onBack, onBrandAdded }) => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const token=getToken();
 
   const handleAddBrand = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        'http://localhost:8800/api/brands/',
-        { name },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      if (response.data.message==='Brand created successfully!') {
+      const response = await axiosInstance.post(API_ENDPOINTS.BRANDS, { name });
+      if (response.data.message === 'Brand created successfully!') {
         onBrandAdded();
         alert(response.data.message);
       } else {
@@ -49,7 +40,9 @@ const AddBrand = ({ onBack, onBrandAdded }) => {
         />
         <div className="button-group">
           <button type="button" onClick={onBack}>Back</button>
-          <button type="submit" disabled={loading}>{loading ? 'Adding...' : 'Add Brand'}</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Adding...' : 'Add Brand'}
+          </button>
         </div>
         {error && <p className="error-message">{error}</p>}
       </form>

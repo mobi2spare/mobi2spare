@@ -1,13 +1,13 @@
+// src/components/addcategory/AddCategory.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosConfig'; // Import the configured Axios instance
 import './addcategory.css';
-import { getToken } from '../../tokenutility';
+import { API_ENDPOINTS } from '../../constants'; // Import API endpoints
 
 const AddCategory = ({ onBack, onCategoryAdded }) => {
   const [name, setName] = useState('');
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState(null);
-  const token=getToken();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -17,12 +17,11 @@ const AddCategory = ({ onBack, onCategoryAdded }) => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      console.log(file);
       formData.append('file', file);
 
-      const uploadResponse = await axios.post(`http://localhost:8800/api/category/upload/1`, formData, {
+      // Upload the image
+      const uploadResponse = await axiosInstance.post(`${API_ENDPOINTS.CATEGORY_UPLOAD}1`, formData, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
@@ -31,18 +30,18 @@ const AddCategory = ({ onBack, onCategoryAdded }) => {
         setMessage('Failed to upload image');
         return;
       }
-
+      
       const imagePath = uploadResponse.data.path.key;
 
-      const response = await axios.post('http://localhost:8800/api/category', { name, imagePath }, {
+      // Create the category
+      const response = await axiosInstance.post(API_ENDPOINTS.CATEGORY, { name, imagePath }, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
       setMessage(response.data.message);
-      onCategoryAdded(); 
+      onCategoryAdded();
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         setMessage(error.response.data.message);
@@ -75,7 +74,7 @@ const AddCategory = ({ onBack, onCategoryAdded }) => {
           />
         </label>
         <div className="button-container">
-          <button className="back-button" onClick={onBack}>Back</button>
+          <button className="back-button" type="button" onClick={onBack}>Back</button>
           <button className="submit-button" type="submit">Submit</button>
         </div>
       </form>
