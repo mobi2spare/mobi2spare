@@ -32,7 +32,7 @@ export const addCategory = async (req, res, next) => {
 
             const insertImageQuery = 'INSERT INTO images (image_path) VALUES ($1) RETURNING id';
             const imageResult = await db.one(insertImageQuery, [imagePath]);
-
+            //console.log("kl");
             if (!imageResult) {
                 return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Failed to insert image' });
             }

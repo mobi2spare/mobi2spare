@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import './Login.css'; // Import your custom CSS file for styling
+import { API_ENDPOINTS } from './constants'; // Adjust the import path as necessary
 
 const Login = () => {
   const history = useNavigate();
@@ -14,7 +15,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8800/api/signin', {
+      const response = await axios.post(`${API_ENDPOINTS.SIGNIN}`, {
         phoneNumber,
         password,
       });

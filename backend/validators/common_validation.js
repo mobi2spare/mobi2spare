@@ -37,10 +37,10 @@ export function validateErrors(req, res, next) {
 }
 
 export function isAdmin(req, res, next) {
-    console.log(req.userRoles);
+    //console.log(req.userRoles);
     // Replace this with your logic to check if the user is an admin
     // This could involve checking a user role in the database or a flag in the user object
-    console.log(req.userRoles);
+    //console.log(req.userRoles);
     if (req.userRoles !== 'Admin') {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Admin access denied!.' });
     };

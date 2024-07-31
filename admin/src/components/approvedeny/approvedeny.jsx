@@ -25,10 +25,10 @@ const TempRequestsTable = () => {
             const [brandResponse, categoryResponse, attributeResponse, buyerResponse] = await Promise.all([
               axiosInstance.get(`${API_ENDPOINTS.BRANDS}${request.brand_id}`),
               axiosInstance.get(`${API_ENDPOINTS.CATEGORY}${request.category_id}`),
-              axiosInstance.get(`/attribute/getvalue/${request.attribute_value_id}`), // Endpoint seems specific
+              axiosInstance.get(`${API_ENDPOINTS.GET_VALUE}${request.attribute_value_id}`), // Endpoint seems specific
               axiosInstance.get(`${API_ENDPOINTS.USERS}${request.seller_id}`)
             ]);
-
+  
             return {
               ...request,
               brand_name: brandResponse.data.data.name || 'Unknown Brand',

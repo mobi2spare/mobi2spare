@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { getToken } from './tokenutility'; 
 
-const instance = axios.create({
-  baseURL: 'http://localhost:8800/api',
-});
+const instance = axios.create();
 
 instance.interceptors.request.use(
   (config) => {
@@ -24,6 +22,7 @@ instance.interceptors.response.use(
     if (error.response && error.response.status === 401) {  
       console.error('Unauthorized request. Please check your token.');
     } else {
+        console.log("g");
       console.error('Error:', error.message);
     }
     return Promise.reject(error);
